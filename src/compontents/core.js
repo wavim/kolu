@@ -61,7 +61,7 @@ class Scene {
 			}
 
 			if (relPoly.some((vertex) => vertex[2] < 0)) continue;
-			zBuffer.push(relPoly[0][2] + relPoly[1][2] + relPoly[2][2]);
+			zBuffer.push(Math.max(...relPoly.map((vertexes) => vertexes[2])));
 
 			const projPoly = [];
 			for (const [relX, relY, relZ] of relPoly) {
