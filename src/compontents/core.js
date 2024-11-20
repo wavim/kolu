@@ -65,7 +65,7 @@ class Scene {
 
 			const projPoly = [];
 			for (const [relX, relY, relZ] of relPoly) {
-				const q = focal / Math.abs(relZ);
+				const q = focal / relZ;
 				const projX = relX * q;
 				const projY = relY * q;
 				projPoly.push([0.5 * width + projX, 0.5 * height - projY].map(Math.round));
