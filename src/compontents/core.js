@@ -38,6 +38,8 @@ class Scene {
 
 		const focal = (0.5 * height) / Math.tan(0.5 * this.camFOV);
 
+		const projPolys = [];
+		const zBuffer = [];
 		//MO TODO use matrix mult for perf.
 		for (const poly of this.polys) {
 			if (poly === false) continue;
@@ -58,7 +60,8 @@ class Scene {
 				relPoly.push([relX, relY, relZ]);
 			}
 
-			if (relPoly.every((vertex) => vertex[2] < 0)) continue;
+			if (relPoly.some((vertex) => vertex[2] < 0)) continue;
+			zBuffer.push(relPoly[0][2] + relPoly[1][2] + relPoly[2][2]);
 
 			const projPoly = [];
 			for (const [relX, relY, relZ] of relPoly) {
@@ -68,14 +71,17 @@ class Scene {
 				projPoly.push([0.5 * width + projX, 0.5 * height - projY].map(Math.round));
 			}
 
-			const [r, g, b] = poly.rgb;
+			projPolys.push({ i: projPolys.length, poly: projPoly, rgb: poly.rgb });
+		}
+
+		for (const { poly, rgb } of projPolys.sort(({ i: i1 }, { i: i2 }) => zBuffer[i2] - zBuffer[i1])) {
+			const [r, g, b] = rgb;
 			this.context.fillStyle = `rgb(${r} ${g} ${b})`;
 
-			//MO TODO optimise with imageData
 			this.context.beginPath();
-			this.context.moveTo(...projPoly[0]);
-			this.context.lineTo(...projPoly[1]);
-			this.context.lineTo(...projPoly[2]);
+			this.context.moveTo(...poly[0]);
+			this.context.lineTo(...poly[1]);
+			this.context.lineTo(...poly[2]);
 			this.context.fill();
 		}
 	}
