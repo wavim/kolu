@@ -4,8 +4,13 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "test"
+    "build": "webpack"
   },
   "author": "carbonsoda",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
+  }
 }
