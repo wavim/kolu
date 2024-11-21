@@ -3,7 +3,6 @@ namespace LA {
 		static INVALID_INDEX = new RangeError("vector index out of bounds");
 		static INVALID_LENGTH = new RangeError("invalid vector length");
 		static INVALID_OPERANDS_CROSS = new TypeError("invalid operands for cross product");
-		static INVALID_TRANSFORM = new TypeError("invalid transform matrix on vector");
 		static LENGTH_UNMATCH = new TypeError("operand vectors length unmatch");
 
 		length: number;
@@ -94,13 +93,6 @@ namespace LA {
 		unhomo(): Vec {
 			return new Vec(this.data.slice(0, -1)).div(this.at(-1));
 		}
-
-		apply(mat: Mat): Vec {
-			if (mat.col !== this.length) throw Vec.INVALID_TRANSFORM;
-			const data = [];
-			for (let i = 0; i < mat.row; i++) data.push(Vec.dot(mat.rowAt(i), this));
-			return new Vec(data);
-		}
 	}
 
 	export class Mat {
@@ -108,6 +100,7 @@ namespace LA {
 		static DIM_UNMATCH = new TypeError("operand matrices dimensions unmatch");
 		static INVALID_INDICES = new RangeError("matrix indices out of bounds");
 		static INVALID_OPERANDS_MUL = new TypeError("invalid operands for matrix multiplication");
+		static INVALID_TRANSFORM_VEC = new TypeError("invalid vector length for matrix transformation");
 		static ROWS_LENGTH_UNMATCH = new TypeError("length of matrix rows unmatch");
 
 		constructor(public row: number, public col: number, public data: number[]) {
@@ -194,6 +187,13 @@ namespace LA {
 				}
 			}
 			return new Mat(mat1.row, mat2.col, data);
+		}
+
+		apply(vec: Vec): Vec {
+			if (this.col !== vec.length) throw Mat.INVALID_TRANSFORM_VEC;
+			const data = [];
+			for (let i = 0; i < mat.row; i++) data.push(Vec.dot(this.rowAt(i), vec));
+			return new Vec(data);
 		}
 
 		transpose(): Mat {
