@@ -2,7 +2,7 @@ namespace LA {
 	export class Vec {
 		static INVALID_INDEX = new RangeError("vector index out of bounds");
 		static INVALID_LENGTH = new RangeError("invalid vector length");
-		static INVALID_OPERANDS = new TypeError("invalid operand vectors");
+		static INVALID_OPERANDS_CROSS = new TypeError("invalid operands for cross product");
 		static INVALID_TRANSFORM = new TypeError("invalid transform matrix on vector");
 		static LENGTH_UNMATCH = new TypeError("operand vectors length unmatch");
 
@@ -57,7 +57,7 @@ namespace LA {
 			return sum;
 		}
 		static cross(vec1: Vec, vec2: Vec): Vec {
-			if (vec1.length !== 3 || vec2.length !== 3) throw Vec.INVALID_OPERANDS;
+			if (vec1.length !== 3 || vec2.length !== 3) throw Vec.INVALID_OPERANDS_CROSS;
 			const [a1, a2, a3] = vec1.data;
 			const [b1, b2, b3] = vec2.data;
 			return Vec.new(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
@@ -107,7 +107,7 @@ namespace LA {
 		static DATA_UNFIT_DIM = new TypeError("matrix data cant fit dimensions");
 		static DIM_UNMATCH = new TypeError("operand matrices dimensions unmatch");
 		static INVALID_INDICES = new RangeError("matrix indices out of bounds");
-		static INVALID_OPERANDS = new TypeError("invalid operand matrices");
+		static INVALID_OPERANDS_MUL = new TypeError("invalid operands for matrix multiplication");
 		static ROWS_LENGTH_UNMATCH = new TypeError("length of matrix rows unmatch");
 
 		constructor(public row: number, public col: number, public data: number[]) {
@@ -184,7 +184,7 @@ namespace LA {
 			);
 		}
 		static mul(mat1: Mat, mat2: Mat): Mat {
-			if (mat1.col !== mat2.row) throw Mat.INVALID_OPERANDS;
+			if (mat1.col !== mat2.row) throw Mat.INVALID_OPERANDS_MUL;
 			const data = Array(mat1.row * mat2.col).fill(0);
 			for (let i = 0; i < mat1.row; i++) {
 				for (let j = 0; j < mat2.col; j++) {
