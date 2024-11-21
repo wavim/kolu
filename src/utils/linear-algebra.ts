@@ -192,7 +192,7 @@ namespace LA {
 		apply(vec: Vec): Vec {
 			if (this.col !== vec.length) throw Mat.INVALID_TRANSFORM_VEC;
 			const data = [];
-			for (let i = 0; i < mat.row; i++) data.push(Vec.dot(this.rowAt(i), vec));
+			for (let i = 0; i < this.row; i++) data.push(Vec.dot(this.rowAt(i), vec));
 			return new Vec(data);
 		}
 
