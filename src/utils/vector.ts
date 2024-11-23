@@ -1,95 +1,63 @@
-const INVALID_INDEX = new RangeError("vector index out of bounds");
-const INVALID_LENGTH = new RangeError("invalid vector length");
-const INVALID_OPERANDS_CROSS = new TypeError("invalid operands for cross product");
-const LENGTH_UNMATCH = new TypeError("operand vectors length unmatch");
+export namespace Vec {
+	export type vec = number[];
 
-export class Vec {
-	length: number;
-
-	constructor(public data: number[]) {
-		this.length = data.length;
-	}
-	static new(...eles: number[]): Vec {
-		return new Vec(eles);
+	export function log(vec: vec, label?: string): void {
+		console.log(`${label ?? ""}${label ? " " : ""}Vec(${vec.length}) ${JSON.stringify(vec)}`);
 	}
 
-	log(...items: any[]): void {
-		console.log(`${items.join(" ")}~Vec(${this.length}) ${JSON.stringify(this.data)}`);
+	export function fill(length: number, x: number): vec {
+		return Array(length).fill(x);
 	}
-
-	at(i: number): number {
-		if (i < 0) i += this.length;
-		return this.data[i];
+	export function zero(length: number): vec {
+		return fill(length, 0);
 	}
-	set(i: number, x: number): void {
-		if (i < 0) i += this.length;
-		this.data[i] = x;
-	}
-
-	static fill(length: number, x: number): Vec {
-		if (length < 0) throw INVALID_LENGTH;
-		return new Vec(Array(length).fill(x));
-	}
-	static zero(length: number): Vec {
-		return Vec.fill(length, 0);
-	}
-	static std(length: number, i: number): Vec {
-		const vec = Vec.zero(length);
-		if (vec.data[i] === undefined) throw INVALID_INDEX;
-		vec.data[i] = 1;
+	export function std(length: number, i: number): vec {
+		const vec = zero(length);
+		vec[i] = 1;
 		return vec;
 	}
 
-	static add(vec1: Vec, vec2: Vec): Vec {
-		if (vec1.length !== vec2.length) throw LENGTH_UNMATCH;
-		return new Vec(vec1.data.map((ele, i) => ele + vec2.data[i]));
+	export function vAdd(vec1: vec, vec2: vec): vec {
+		return vec1.map((ele, i) => ele + vec2[i]);
 	}
-	static sub(vec1: Vec, vec2: Vec): Vec {
-		if (vec1.length !== vec2.length) throw LENGTH_UNMATCH;
-		return new Vec(vec1.data.map((ele, i) => ele - vec2.data[i]));
+	export function vSub(vec1: vec, vec2: vec): vec {
+		return vec1.map((ele, i) => ele - vec2[i]);
 	}
-	static dot(vec1: Vec, vec2: Vec): number {
-		if (vec1.length !== vec2.length) throw LENGTH_UNMATCH;
+	export function dot(vec1: vec, vec2: vec): number {
 		let sum = 0;
-		for (let i = 0; i < vec1.length; i++) sum += vec1.data[i] * vec2.data[i];
+		for (let i = 0; i < vec1.length; i++) sum += vec1[i] * vec2[i];
 		return sum;
 	}
-	static cross(vec1: Vec, vec2: Vec): Vec {
-		if (vec1.length !== 3 || vec2.length !== 3) throw INVALID_OPERANDS_CROSS;
-		const [a1, a2, a3] = vec1.data;
-		const [b1, b2, b3] = vec2.data;
-		return Vec.new(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
+	export function cross(vec1: vec, vec2: vec): vec {
+		const [a1, a2, a3] = vec1;
+		const [b1, b2, b3] = vec2;
+		return [a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1];
 	}
 
-	add(x: number): Vec {
-		return new Vec(this.data.map((ele) => ele + x));
+	export function add(vec: vec, x: number): vec {
+		return vec.map((ele) => ele + x);
 	}
-	sub(x: number): Vec {
-		return this.add(-x);
+	export function sub(vec: vec, x: number): vec {
+		return add(vec, -x);
 	}
-	mul(x: number): Vec {
-		return new Vec(this.data.map((ele) => ele * x));
+	export function mul(vec: vec, x: number): vec {
+		return vec.map((ele) => ele * x);
 	}
-	div(x: number): Vec {
-		return this.mul(1 / x);
-	}
-
-	sum(): number {
-		let sum = 0;
-		for (const ele of this.data) sum += ele;
-		return sum;
-	}
-	norm(): number {
-		return Vec.dot(this, this) ** 0.5;
+	export function div(vec: vec, x: number): vec {
+		return mul(vec, 1 / x);
 	}
 
-	unit(): Vec {
-		return this.div(this.norm());
+	export function norm(vec: vec): number {
+		return dot(vec, vec) ** 0.5;
 	}
-	homo(): Vec {
-		return new Vec(this.data.concat(1));
+	export function unit(vec: vec): vec {
+		return div(vec, norm(vec));
 	}
-	unhomo(): Vec {
-		return new Vec(this.data.slice(0, -1)).div(this.at(-1));
+
+	export function homo(vec: vec): vec {
+		return vec.concat(1);
+	}
+	export function unhomo(vec: vec): vec {
+		return div(vec.slice(0, -1), vec[vec.length - 1]);
 	}
 }
