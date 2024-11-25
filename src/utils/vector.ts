@@ -1,16 +1,22 @@
 export class Vec extends Array<number> {
-	dim: number;
-
 	constructor(...eles: number[]) {
 		super();
 		this.push(...eles);
-		this.dim = eles.length;
+	}
+
+	//MO NOTE Symbol.species usage discouraged
+	static get [Symbol.species](): typeof Array<number> {
+		return Array<number>;
+	}
+
+	get dim(): number {
+		return this.length;
 	}
 
 	toString(): string {
 		return `Vec(${this.dim}) ${JSON.stringify(this)}`;
 	}
-	log(lbl?: string): void {
+	log(lbl?: any): void {
 		console.log(`${lbl ?? ""}${lbl ? " ~ " : ""}${this}`);
 	}
 
@@ -38,12 +44,12 @@ export class Vec extends Array<number> {
 		return sum;
 	}
 	static cross(vec1: Vec, vec2: Vec): Vec {
-		const [a1, a2, a3] = vec1;
-		const [b1, b2, b3] = vec2;
+		const [a0, a1, a2] = vec1;
+		const [b0, b1, b2] = vec2;
 		return new Vec(
-			a2 * b3 - a3 * b2,
-			a3 * b1 - a1 * b3,
 			a1 * b2 - a2 * b1,
+			a2 * b0 - a0 * b2,
+			a0 * b1 - a1 * b0,
 		);
 	}
 

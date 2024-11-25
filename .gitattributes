@@ -1,1 +1,3 @@
 *.html linguist-detectable=false
+*.config.js linguist-detectable=false
+*.config.mjs linguist-detectable=false
