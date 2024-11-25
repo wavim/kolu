@@ -3,7 +3,7 @@ import { Vec } from "./vector";
 export class Mat extends Array<Vec> {
 	constructor(...rows: (Vec | Array<number>)[]) {
 		super();
-		this.push(...rows.map((row) => new Vec(...row)));
+		this.push(...rows.map(Vec.from));
 	}
 
 	//MO NOTE Symbol.species usage discouraged
@@ -28,9 +28,7 @@ export class Mat extends Array<Vec> {
 	}
 
 	static fill(row: number, col: number, x: number): Mat {
-		return new Mat(
-			...[...Array(row)].map(() => Array(col).fill(x)),
-		);
+		return Mat.from([...Array(row)].map(() => Array(col).fill(x)));
 	}
 	static zero(row: number, col: number): Mat {
 		return Mat.fill(row, col, 0);
@@ -42,14 +40,14 @@ export class Mat extends Array<Vec> {
 	}
 
 	colAt(col: number): Vec {
-		return new Vec(...this.map((row) => row[col]));
+		return Vec.from(this.map((row) => row[col]));
 	}
 
 	static add(mat1: Mat, mat2: Mat): Mat {
-		return new Mat(...mat1.map((row, i) => Vec.add(row, mat2[i])));
+		return Mat.from(mat1.map((row, i) => Vec.add(row, mat2[i])));
 	}
 	static sub(mat1: Mat, mat2: Mat): Mat {
-		return new Mat(...mat1.map((row, i) => Vec.sub(row, mat2[i])));
+		return Mat.from(mat1.map((row, i) => Vec.sub(row, mat2[i])));
 	}
 	static mul(mat1: Mat, mat2: Mat): Mat {
 		const mat = Mat.zero(mat1.row, mat2.col);
@@ -62,7 +60,7 @@ export class Mat extends Array<Vec> {
 	}
 
 	apply(vec: Vec): Vec {
-		return new Vec(...this.map((row) => Vec.dot(row, vec)));
+		return Vec.from(this.map((row) => Vec.dot(row, vec)));
 	}
 }
 

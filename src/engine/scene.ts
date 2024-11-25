@@ -1,14 +1,12 @@
+import { Cam } from "./camera";
 import { Tri } from "../primitives/triangle";
 
 export class Scene {
-	canvas: HTMLCanvasElement;
-	context: CanvasRenderingContext2D;
-	triangles: Tri[] = [];
+	triangles: (Tri | null)[] = [];
+	camera: Cam;
 
-	//MO TODO allow disabling alpha for perf
-	constructor(canvas?: HTMLCanvasElement) {
-		this.canvas = canvas ?? document.createElement("canvas");
-		this.context = this.canvas.getContext("2d");
+	constructor(cam?: Cam) {
+		this.camera = cam ?? new Cam();
 	}
 
 	putTri(tri: Tri): number {

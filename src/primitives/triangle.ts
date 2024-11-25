@@ -1,11 +1,11 @@
 import { Vec } from "../maths/vector";
-import { vertex } from "./constants";
+import { Vec3 } from "../types";
 
 export class Tri {
 	vertices: [Vec, Vec, Vec];
 	fill: string = "black";
 
-	constructor(v1: vertex, v2: vertex, v3: vertex) {
-		this.vertices = [v1, v2, v3].map((v) => new Vec(...v));
+	constructor(v1: Vec3, v2: Vec3, v3: Vec3) {
+		this.vertices = [v1, v2, v3].map(Vec.from);
 	}
 }
