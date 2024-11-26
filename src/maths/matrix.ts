@@ -5,6 +5,9 @@ export class Mat extends Array<Vec> {
 		super();
 		this.push(...rows.map(Vec.from));
 	}
+	static from(rows: (Vec | Array<number>)[]): Mat {
+		return new Mat(...rows);
+	}
 
 	//MO NOTE Symbol.species usage discouraged
 	static get [Symbol.species](): typeof Array<Vec> {
@@ -57,6 +60,27 @@ export class Mat extends Array<Vec> {
 			}
 		}
 		return mat;
+	}
+
+	add(x: number): Mat {
+		return Mat.from(this.map((row) => row.add(x)));
+	}
+	sub(x: number): Mat {
+		return this.add(-x);
+	}
+	mul(x: number): Mat {
+		return Mat.from(this.map((row) => row.mul(x)));
+	}
+	div(x: number): Mat {
+		return this.mul(1 / x);
+	}
+
+	homo(delta: Array<number> | Vec, scale: Array<number> | Vec): Mat {
+		return Mat.from(
+			this.map((row, i) => row.concat(delta[i])).concat([
+				scale,
+			]),
+		);
 	}
 
 	apply(vec: Vec): Vec {

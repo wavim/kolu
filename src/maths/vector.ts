@@ -3,6 +3,9 @@ export class Vec extends Array<number> {
 		super();
 		this.push(...eles);
 	}
+	static from(eles: number[]): Vec {
+		return new Vec(...eles);
+	}
 
 	//MO NOTE Symbol.species usage discouraged
 	static get [Symbol.species](): typeof Array<number> {
@@ -80,4 +83,3 @@ export class Vec extends Array<number> {
 		return Vec.from(this.slice(0, -1)).div(this[this.dim - 1]);
 	}
 }
-

@@ -6,13 +6,12 @@ const path = require("path");
 const terserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
-	target: "node",
 	mode: "none",
 	entry: "./src/index.ts",
 	output: {
 		path: path.resolve(__dirname, "dist"),
 		filename: "index.js",
-		libraryTarget: "commonjs2",
+		library: "Kolu",
 		devtoolModuleFilenameTemplate: "../[resource-path]",
 	},
 	devtool: "source-map",

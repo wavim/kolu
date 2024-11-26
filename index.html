@@ -4,7 +4,10 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
 		<title>test</title>
 		<script>
 			function print(obj) {
@@ -16,272 +19,193 @@
 				background-color: whitesmoke;
 			}
 		</style>
-		<script>
-			class Poly {
-				constructor(vertexes, rgb) {
-					this.vertexes = vertexes;
-					this.rgb = rgb;
-				}
-			}
-
-			class Scene {
-				//MO TODO allow disabling alpha
-				constructor(canvas) {
-					this.canvas = canvas ?? document.createElement("canvas");
-					this.context = this.canvas.getContext("2d");
-					this.camPos = [0, 0, 0];
-					this.camRot = [0, 0, 0];
-					this.camFOV = Math.PI / 2;
-					this.polys = [];
-				}
-
-				putPoly(poly) {
-					return this.polys.push(poly) - 1;
-				}
-
-				removePoly(i) {
-					this.polys[i] = false;
-				}
-
-				render() {
-					const width = this.canvas.width;
-					const height = this.canvas.height;
-					this.context.clearRect(0, 0, width, height);
-
-					const deltaX = this.camPos[0];
-					const deltaY = this.camPos[1];
-					const deltaZ = this.camPos[2];
-
-					const [sinA, sinB, sinC] = this.camRot.map((angle) => Math.sin(-angle));
-					const [cosA, cosB, cosC] = this.camRot.map((angle) => Math.cos(-angle));
-
-					const focal = (0.5 * height) / Math.tan(0.5 * this.camFOV);
-
-					const projPolys = [];
-					const zBuffer = [];
-					//MO TODO use matrix mult for perf.
-					for (const poly of this.polys) {
-						if (poly === false) continue;
-
-						const relPoly = [];
-						for (const [x, y, z] of poly.vertexes) {
-							const _x = x - deltaX;
-							const _y = y - deltaY;
-							const _z = z - deltaZ;
-
-							const q = _x * cosC - _y * sinC;
-							const w = q * sinB - _z * cosB;
-							const e = _x * sinC + _y * cosC;
-							const relX = q * cosB + _z * sinB;
-							const relY = w * sinA + e * cosA;
-							const relZ = e * sinA - w * cosA;
-
-							relPoly.push([relX, relY, relZ]);
-						}
-
-						if (relPoly.some((vertex) => vertex[2] < 0)) continue;
-						zBuffer.push(Math.max(...relPoly.map((vertexes) => vertexes[2])));
-
-						const projPoly = [];
-						for (const [relX, relY, relZ] of relPoly) {
-							const q = focal / relZ;
-							const projX = relX * q;
-							const projY = relY * q;
-							projPoly.push([0.5 * width + projX, 0.5 * height - projY].map(Math.round));
-						}
-
-						projPolys.push({ i: projPolys.length, poly: projPoly, rgb: poly.rgb });
-					}
-
-					for (const { poly, rgb } of projPolys.sort(({ i: i1 }, { i: i2 }) => zBuffer[i2] - zBuffer[i1])) {
-						const [r, g, b] = rgb;
-						this.context.fillStyle = `rgb(${r} ${g} ${b})`;
-
-						this.context.beginPath();
-						this.context.moveTo(...poly[0]);
-						this.context.lineTo(...poly[1]);
-						this.context.lineTo(...poly[2]);
-						this.context.fill();
-					}
-				}
-			}
-		</script>
 	</head>
 	<body>
 		<canvas id="test-canvas" tabindex="1"></canvas>
+		<script src="./dist/index.js"></script>
 		<script>
 			const cvs = document.getElementById("test-canvas");
 			cvs.width = window.innerWidth;
 			cvs.height = window.innerHeight;
-			const kolu = new Scene(cvs);
+
 			const s = cvs.width * 0.3;
-			kolu.camPos = [2 * s, 2 * s, 2 * s];
+			const scene = new Kolu.Scene();
 
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, 0, 0],
-						[0, s, 0],
-						[s, 0, 0],
-					],
-					[0, 0, 255],
+			const tris = [
+				new Kolu.Tri(
+					[-s, -s, -3 * s],
+					[s, -s, -3 * s],
+					[-s, s, -3 * s],
 				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[s, 0, 0],
-						[s, s, 0],
-						[0, s, 0],
-					],
-					[0, 0, 255],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, 0, 0],
-						[0, s, 0],
-						[0, s, s],
-					],
-					[0, 255, 255],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, 0, 0],
-						[0, 0, s],
-						[0, s, s],
-					],
-					[0, 255, 255],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, 0, 0],
-						[s, 0, 0],
-						[s, 0, s],
-					],
-					[255, 255, 0],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, 0, 0],
-						[0, 0, s],
-						[s, 0, s],
-					],
-					[255, 255, 0],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[s, 0, 0],
-						[s, s, 0],
-						[s, s, s],
-					],
-					[255, 0, 0],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[s, 0, 0],
-						[s, 0, s],
-						[s, s, s],
-					],
-					[255, 0, 0],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, s, 0],
-						[0, s, s],
-						[s, s, 0],
-					],
-					[155, 0, 0],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, s, s],
-						[s, s, s],
-						[s, s, 0],
-					],
-					[155, 0, 0],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, 0, s],
-						[s, s, s],
-						[s, 0, s],
-					],
-					[50, 0, 155],
-				),
-			);
-			kolu.putPoly(
-				new Poly(
-					[
-						[0, 0, s],
-						[0, s, s],
-						[s, s, s],
-					],
-					[50, 0, 155],
-				),
-			);
+				// new Kolu.Tri([s, 0, 0], [s, s, 0], [0, s, 0]),
+				// new Tri()
+			];
 
-			cvs.onmousemove = (ev) => {
-				kolu.camRot[0] = (0.5 - ev.offsetY / cvs.height) * Math.PI;
-				kolu.camRot[1] = (0.5 - ev.offsetX / cvs.width) * Math.PI * 4;
-				kolu.render();
-			};
-			const d = 20;
-			cvs.onkeydown = (ev) => {
-				const k = ev.key.toLowerCase();
-				let a = 0;
-				if (k === "s" || k === "d" || k === "e") a = d;
-				if (k === "w" || k === "a" || k === "q") a = -d;
-				if (k === "n") {
-					let o = 0.05;
-					function an() {
-						kolu.camFOV -= o;
-						kolu.render();
-						o *= 0.8;
-						if (o > 0.001) requestAnimationFrame(an);
-					}
-					an();
-				}
-				if (k === "m") {
-					let o = 0.05;
-					function an() {
-						kolu.camFOV += o;
-						kolu.render();
-						o *= 0.8;
-						if (o > 0.001) requestAnimationFrame(an);
-					}
-					an();
-				}
-				function mv(c, b) {
-					kolu.camPos[c] += b;
-					kolu.render();
-					b *= 0.9;
-					if (Math.abs(b) > 0.1) requestAnimationFrame(() => mv(c, b));
-				}
-				let c = 0;
-				if (k === "w" || k === "s") c = 0;
-				if (k === "d" || k === "a") c = 2;
-				if (k === "e" || k === "q") c = 1;
+			const kCvs = new Kolu.KoluCanvas(cvs);
+			for (tri of tris) scene.putTri(tri);
+			scene.camera.pos = [2 * s, 2 * s, 2 * s];
+			Kolu.render(kCvs, scene);
 
-				if (a !== 0) mv(c, a);
-			};
+			// cvs.onmousemove = (ev) => {
+			// 	scene.camera.rot[1] =
+			// 		(0.5 - ev.offsetY / cvs.height) *
+			// 		Math.PI;
+			// 	scene.camera.rot[2] =
+			// 		(0.5 - ev.offsetX / cvs.width) *
+			// 		Math.PI *
+			// 		4;
+			// 	Kolu.render(kCvs, scene);
+			// };
+			
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, 0, 0],
+			// 			[0, s, 0],
+			// 			[0, s, s],
+			// 		],
+			// 		[0, 255, 255],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, 0, 0],
+			// 			[0, 0, s],
+			// 			[0, s, s],
+			// 		],
+			// 		[0, 255, 255],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, 0, 0],
+			// 			[s, 0, 0],
+			// 			[s, 0, s],
+			// 		],
+			// 		[255, 255, 0],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, 0, 0],
+			// 			[0, 0, s],
+			// 			[s, 0, s],
+			// 		],
+			// 		[255, 255, 0],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[s, 0, 0],
+			// 			[s, s, 0],
+			// 			[s, s, s],
+			// 		],
+			// 		[255, 0, 0],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[s, 0, 0],
+			// 			[s, 0, s],
+			// 			[s, s, s],
+			// 		],
+			// 		[255, 0, 0],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, s, 0],
+			// 			[0, s, s],
+			// 			[s, s, 0],
+			// 		],
+			// 		[155, 0, 0],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, s, s],
+			// 			[s, s, s],
+			// 			[s, s, 0],
+			// 		],
+			// 		[155, 0, 0],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, 0, s],
+			// 			[s, s, s],
+			// 			[s, 0, s],
+			// 		],
+			// 		[50, 0, 155],
+			// 	),
+			// );
+			// kolu.putPoly(
+			// 	new Poly(
+			// 		[
+			// 			[0, 0, s],
+			// 			[0, s, s],
+			// 			[s, s, s],
+			// 		],
+			// 		[50, 0, 155],
+			// 	),
+			// );
+
+			// const d = 20;
+			// cvs.onkeydown = (ev) => {
+			// 	const k = ev.key.toLowerCase();
+			// 	let a = 0;
+			// 	if (k === "s" || k === "d" || k === "e") a = d;
+			// 	if (k === "w" || k === "a" || k === "q") a = -d;
+			// 	if (k === "n") {
+			// 		let o = 0.05;
+			// 		function an() {
+			// 			kolu.camFOV -= o;
+			// 			kolu.render();
+			// 			o *= 0.8;
+			// 			if (o > 0.001)
+			// 				requestAnimationFrame(
+			// 					an,
+			// 				);
+			// 		}
+			// 		an();
+			// 	}
+			// 	if (k === "m") {
+			// 		let o = 0.05;
+			// 		function an() {
+			// 			kolu.camFOV += o;
+			// 			kolu.render();
+			// 			o *= 0.8;
+			// 			if (o > 0.001)
+			// 				requestAnimationFrame(
+			// 					an,
+			// 				);
+			// 		}
+			// 		an();
+			// 	}
+			// 	function mv(c, b) {
+			// 		kolu.camPos[c] += b;
+			// 		kolu.render();
+			// 		b *= 0.9;
+			// 		if (Math.abs(b) > 0.1)
+			// 			requestAnimationFrame(() =>
+			// 				mv(c, b),
+			// 			);
+			// 	}
+			// 	let c = 0;
+			// 	if (k === "w" || k === "s") c = 0;
+			// 	if (k === "d" || k === "a") c = 2;
+			// 	if (k === "e" || k === "q") c = 1;
+
+			// 	if (a !== 0) mv(c, a);
+			// };
 		</script>
 	</body>
 </html>
