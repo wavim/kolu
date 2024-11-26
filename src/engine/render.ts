@@ -10,53 +10,35 @@ export function render(koluCanvas: KoluCanvas, scene: Scene) {
 
 	const width = canvas.width;
 	const height = canvas.height;
-	const ar = width / height;
-
 	const camera = scene.camera;
+
+	const translate = Mat.id(3).homo(camera.pos.mul(-1), [0, 0, 0, 1]);
 
 	const [sA, sB, sC] = camera.rot.map((angle) => -Math.sin(angle));
 	const [cA, cB, cC] = camera.rot.map((angle) => Math.cos(angle));
 	const yaw = new Mat([cA, -sA, 0], [sA, cA, 0], [0, 0, 1]);
 	const pitch = new Mat([cB, 0, sB], [0, 1, 0], [-sB, 0, cB]);
 	const roll = new Mat([1, 0, 0], [0, cC, -sC], [0, sC, cC]);
-	const rotTransform = Mat.mul(yaw, Mat.mul(pitch, roll));
+	const rotate = Mat.mul(yaw, Mat.mul(pitch, roll));
 
-	//MO DEV continue here, rot matrix fixed
-	//MO DEV investigate homo-mat4x4, rot or transl first
+	const frameAlign = Mat.mul(rotate, translate);
 
-	const inverseFocal = (Math.tan(0.5 * camera.fov) / 0.5) * height;
-	//MO DEV clip planes' value only for testing
-	// // const near = 0.5 * height * d;
-	// const near = 10;
-	// const far = near * 3;
+	const dist = height / (2 * Math.tan(0.5 * camera.fov));
+	const project = new Mat([dist, 0, 0, 0], [0, dist, 0, 0], [0, 0, 1, 0]);
 
-	// const vd = 1 / (near - far);
+	const transform = Mat.mul(project, frameAlign);
 
-	//MO FIX broken as heck
-	const projTransform = new Mat(
-		[1, 0, 0],
-		[0, 1, 0],
-		[0, 0, inverseFocal],
-	);
-
-	// const transform = Mat.mul(projTransform, viewTransform);
-
-	const projTris = [];
+	const perspTris = [];
 	const zBuffer: number[] = [];
 	//MO TODO curr triangles is only primitive
 	for (const triangle of scene.triangles) {
 		if (triangle === null) continue;
 
-		const relVertices = triangle.vertices.map((vertex) =>
-			rotTransform.apply(Vec.sub(vertex, camera.pos)),
+		const projVertices = triangle.vertices.map((vertex) =>
+			transform.apply(vertex.homo()),
 		);
-		console.log(relVertices);
-		//MO TODO culling
 
-		const projVertices = relVertices.map(
-			(vertex) => projTransform.apply(vertex).unhomo(),
-			// transform.apply(vertex.homo()).unhomo(),
-		);
+		//MO TODO culling
 
 		// if (
 		// 	projVertices.some((vertex) =>
@@ -65,28 +47,21 @@ export function render(koluCanvas: KoluCanvas, scene: Scene) {
 		// )
 		// 	continue;
 
-		projTris.push({
+		perspTris.push({
 			zBi: zBuffer.length,
-			vertices: projVertices,
+			vertices: projVertices.map((vertex) => vertex.unhomo()),
 			fill: triangle.fill,
 		});
 		zBuffer.push(
-			Math.min(...relVertices.map((vertex) => vertex[2])),
+			Math.min(...projVertices.map((vertex) => vertex[2])),
 		);
 	}
 
-	// console.log(
-	// 	JSON.stringify(
-	// 		projTris.map(({ vertices }) =>
-	// 			vertices.map((v) => v.map(Math.round)),
-	// 		),
-	// 	),
-	// );
 	context.clearRect(0, 0, width, height);
-	console.log(projTris);
-	for (const { vertices, fill } of projTris.sort(
+	for (const { vertices, fill } of perspTris.sort(
 		({ zBi: zBi1 }, { zBi: zBi2 }) => zBuffer[zBi2] - zBuffer[zBi1],
 	)) {
+		//MO TODO optimize
 		const [[x1, y1], [x2, y2], [x3, y3]] = vertices;
 		context.fillStyle = fill;
 		context.beginPath();
