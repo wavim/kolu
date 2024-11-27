@@ -7,13 +7,10 @@ import { Vec } from "../maths/vector";
 export function render(koluCanvas: KoluCanvas, scene: Scene) {
 	const canvas = koluCanvas.canvas;
 	const context = koluCanvas.context;
-
 	const width = canvas.width;
 	const height = canvas.height;
+
 	const camera = scene.camera;
-
-	const translate = Mat.id(3).homo(camera.pos.mul(-1), [0, 0, 0, 1]);
-
 	const [sA, sB, sC] = camera.rot.map((angle) => -Math.sin(angle));
 	const [cA, cB, cC] = camera.rot.map((angle) => Math.cos(angle));
 	const yaw = new Mat([cA, -sA, 0], [sA, cA, 0], [0, 0, 1]);
@@ -21,10 +18,18 @@ export function render(koluCanvas: KoluCanvas, scene: Scene) {
 	const roll = new Mat([1, 0, 0], [0, cC, -sC], [0, sC, cC]);
 	const rotate = Mat.mul(yaw, Mat.mul(pitch, roll));
 
-	const frameAlign = Mat.mul(rotate, translate);
+	const frameAlign = rotate.homo(
+		rotate.apply(camera.pos.mul(-1)),
+		[0, 0, 0, 1],
+	);
 
-	const dist = height / (2 * Math.tan(0.5 * camera.fov));
-	const project = new Mat([dist, 0, 0, 0], [0, dist, 0, 0], [0, 0, 1, 0]);
+	const invDist = (2 * Math.tan(0.5 * camera.fov)) / height;
+	const project = new Mat(
+		[1, 0, 0, 0],
+		[0, 1, 0, 0],
+		[0, 0, 0, -1],
+		[0, 0, invDist, 0],
+	);
 
 	const transform = Mat.mul(project, frameAlign);
 
@@ -35,7 +40,7 @@ export function render(koluCanvas: KoluCanvas, scene: Scene) {
 		if (triangle === null) continue;
 
 		const projVertices = triangle.vertices.map((vertex) =>
-			transform.apply(vertex.homo()),
+			transform.apply(vertex.homo()).unhomo(),
 		);
 
 		//MO TODO culling
@@ -49,7 +54,7 @@ export function render(koluCanvas: KoluCanvas, scene: Scene) {
 
 		perspTris.push({
 			zBi: zBuffer.length,
-			vertices: projVertices.map((vertex) => vertex.unhomo()),
+			vertices: projVertices,
 			fill: triangle.fill,
 		});
 		zBuffer.push(
