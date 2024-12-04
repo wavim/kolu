@@ -32,7 +32,8 @@ module.exports = {
 		],
 	},
 	optimization: {
-		minimize: true,
+		//MO DEV 
+		// minimize: true,
 		minimizer: [new terserPlugin()],
 	},
 };

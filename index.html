@@ -39,7 +39,6 @@
 			const kCvs = new Kolu.KoluCanvas(cvs);
 			for (tri of tris) scene.putTri(tri);
 			scene.camera.pos = [s / 2, s / 2, 3 * s];
-			Kolu.render(kCvs, scene);
 
 			cvs.onmousemove = (ev) => {
 				scene.camera.rot[2] =
@@ -49,7 +48,7 @@
 					(ev.offsetX / cvs.width - 0.5) *
 					Math.PI *
 					2;
-				Kolu.render(kCvs, scene);
+				scene.render(kCvs);
 			};
 		</script>
 	</body>
