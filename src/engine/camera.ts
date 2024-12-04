@@ -11,7 +11,7 @@ export class Cam {
 		public fov: number = Math.PI / 2,
 	) {
 		this._pos = Vec.from(pos ?? [0, 0, 0]);
-		this._rot = Vec.from(rot ?? [0, Math.PI / 2, 0]);
+		this._rot = Vec.from(rot ?? [0, 0, 0]);
 	}
 
 	set pos(pos: Vec | Vec3) {

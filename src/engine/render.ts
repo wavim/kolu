@@ -1,7 +1,6 @@
 import { KoluCanvas } from "./canvas";
 import { Mat } from "../maths/matrix";
 import { Scene } from "./scene";
-import { Vec } from "../maths/vector";
 
 //MO DEV test in wireframe first
 export function render(koluCanvas: KoluCanvas, scene: Scene) {

@@ -87,4 +87,3 @@ export class Mat extends Array<Vec> {
 		return Vec.from(this.map((row) => Vec.dot(row, vec)));
 	}
 }
-
