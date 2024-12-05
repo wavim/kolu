@@ -1,16 +1,17 @@
 {
-  "name": "kolu",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "webpack"
-  },
-  "author": "carbonsoda",
-  "license": "MIT",
-  "devDependencies": {
-    "ts-loader": "^9.5.1",
-    "webpack": "^5.96.1",
-    "webpack-cli": "^5.1.4"
-  }
+	"name": "kolu",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"scripts": {
+		"watch": "vite",
+		"build": "vite build",
+		"serve": "vite preview"
+	},
+	"author": "carbonsoda",
+	"license": "MIT",
+	"dependencies": {
+		"typescript": "^5.7.2",
+		"vite": "^6.0.2"
+	}
 }

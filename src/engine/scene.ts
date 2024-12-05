@@ -19,7 +19,7 @@ export class Scene {
 		this.triangles[i] = null;
 	}
 
-	render(koluCanvas: KoluCanvas) {
+	render(koluCanvas: KoluCanvas, options?: { wireframe?: boolean }) {
 		const canvas = koluCanvas.canvas;
 		const context = koluCanvas.context;
 		const width = canvas.width;
@@ -76,19 +76,17 @@ export class Scene {
 		context.clearRect(0, 0, width, height);
 		for (const { vertices, fill } of perspTris.sort(
 			({ zBi: zBi1 }, { zBi: zBi2 }) =>
-				zBuffer[zBi2] - zBuffer[zBi1],
+				zBuffer[zBi1] - zBuffer[zBi2],
 		)) {
-			//MO TODO optimize
-			//MO DEV wireframe for testing
 			const [[x1, y1], [x2, y2], [x3, y3]] = vertices;
-			// context.fillStyle = fill;
+			context.fillStyle = fill;
 			context.beginPath();
 			context.moveTo(0.5 * width + x1, 0.5 * height - y1);
 			context.lineTo(0.5 * width + x2, 0.5 * height - y2);
 			context.lineTo(0.5 * width + x3, 0.5 * height - y3);
 			context.lineTo(0.5 * width + x1, 0.5 * height - y1);
-			// context.fill();
-			context.stroke();
+			if (options?.wireframe) context.stroke();
+			else context.fill();
 		}
 	}
 }

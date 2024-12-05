@@ -1,4 +1,11 @@
-export { Cam } from "./engine/camera";
-export { KoluCanvas } from "./engine/canvas";
-export { Scene } from "./engine/scene";
-export { Tri } from "./primitives/triangle";
+import { Cam } from "./engine/camera";
+import { KoluCanvas } from "./engine/canvas";
+import { Scene } from "./engine/scene";
+import { Tri } from "./primitives/triangle";
+
+export const Kolu = {
+	Cam,
+	KoluCanvas,
+	Scene,
+	Tri,
+};
