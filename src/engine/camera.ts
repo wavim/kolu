@@ -5,11 +5,7 @@ export class Cam {
 	_pos: Vec;
 	_rot: Vec;
 
-	constructor(
-		pos?: Vec | Vec3,
-		rot?: Vec | Vec3,
-		public fov: number = Math.PI / 2,
-	) {
+	constructor(pos?: Vec | Vec3, rot?: Vec | Vec3, public fov: number = Math.PI / 2) {
 		this._pos = Vec.from(pos ?? [0, 0, 0]);
 		this._rot = Vec.from(rot ?? [0, 0, 0]);
 	}

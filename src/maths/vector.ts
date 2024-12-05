@@ -49,11 +49,7 @@ export class Vec extends Array<number> {
 	static cross(vec1: Vec, vec2: Vec): Vec {
 		const [a1, a2, a3] = vec1;
 		const [b1, b2, b3] = vec2;
-		return new Vec(
-			a2 * b3 - a3 * b2,
-			a3 * b1 - a1 * b3,
-			a1 * b2 - a2 * b1,
-		);
+		return new Vec(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
 	}
 
 	add(x: number): Vec {

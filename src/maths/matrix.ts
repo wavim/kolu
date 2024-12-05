@@ -1,3 +1,4 @@
+import { Vec3 } from "../types";
 import { Vec } from "./vector";
 
 export class Mat extends Array<Vec> {
@@ -22,9 +23,7 @@ export class Mat extends Array<Vec> {
 	}
 
 	toString(): string {
-		return `Mat(${this.row}x${this.col})\n[${this.map((row) =>
-			JSON.stringify(row),
-		).join("\n ")}]`;
+		return `Mat(${this.row}x${this.col})\n[${this.map((row) => JSON.stringify(row)).join("\n ")}]`;
 	}
 	log(lbl?: any): void {
 		console.log(`${lbl ?? ""}${lbl ? " ~ " : ""}${this}`);
@@ -40,6 +39,14 @@ export class Mat extends Array<Vec> {
 		const mat = Mat.zero(dim, dim);
 		for (let i = 0; i < dim; i++) mat[i][i] = 1;
 		return mat;
+	}
+	static rot(rotVec: Vec | Vec3): Mat {
+		const [sA, sB, sC] = rotVec.map(Math.sin);
+		const [cA, cB, cC] = rotVec.map(Math.cos);
+		const yaw = new Mat([cA, -sA, 0], [sA, cA, 0], [0, 0, 1]);
+		const pitch = new Mat([cB, 0, sB], [0, 1, 0], [-sB, 0, cB]);
+		const roll = new Mat([1, 0, 0], [0, cC, -sC], [0, sC, cC]);
+		return Mat.mul(yaw, Mat.mul(pitch, roll));
 	}
 
 	colAt(col: number): Vec {
@@ -75,15 +82,14 @@ export class Mat extends Array<Vec> {
 		return this.mul(1 / x);
 	}
 
-	homo(delta: Array<number> | Vec, scale: Array<number> | Vec): Mat {
-		return Mat.from(
-			this.map((row, i) => row.concat(delta[i])).concat([
-				scale,
-			]),
-		);
+	homo(delta: Array<number> | Vec = [0, 0, 0], scale: Array<number> | Vec = [0, 0, 0, 1]): Mat {
+		return Mat.from(this.map((row, i) => row.concat(delta[i])).concat([scale]));
 	}
 
-	apply(vec: Vec): Vec {
+	transform(vec: Vec): Vec {
 		return Vec.from(this.map((row) => Vec.dot(row, vec)));
+	}
+	transformHomo(vec: Vec): Vec {
+		return this.transform(vec.homo()).unhomo();
 	}
 }

@@ -4,10 +4,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0"
-		/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>test</title>
 		<script>
 			function print(obj) {
@@ -23,107 +20,65 @@
 	<body>
 		<canvas id="canvas3d" tabindex="1"></canvas>
 		<script type="module">
-			import { Kolu } from "./src/index";
+			import { Scene, KObject, Tri, KCanvas, Mat } from "./src/index";
 
 			const cvs = document.getElementById("canvas3d");
 			cvs.width = window.innerWidth;
 			cvs.height = window.innerHeight;
 
 			const s = cvs.width * 0.3;
-			const scene = new Kolu.Scene();
+			const scene = new Scene();
 
-			const tris = [
-				new Kolu.Tri(
-					[s, 0, 0],
-					[s, s, 0],
-					[0, s, 0],
-					"rgb(0 0 0)",
-				),
-				new Kolu.Tri(
-					[0, 0, 0],
-					[0, s, 0],
-					[s, 0, 0],
-					"rgb(0 0 0)",
-				),
-				new Kolu.Tri(
-					[0, 0, 0],
-					[0, s, 0],
-					[0, s, s],
-					"rgb(30 30 30)",
-				),
-				new Kolu.Tri(
-					[0, 0, 0],
-					[0, 0, s],
-					[0, s, s],
-					"rgb(30 30 30)",
-				),
-				new Kolu.Tri(
-					[0, 0, 0],
-					[s, 0, 0],
-					[s, 0, s],
-					"rgb(60 60 60)",
-				),
-				new Kolu.Tri(
-					[0, 0, 0],
-					[0, 0, s],
-					[s, 0, s],
-					"rgb(60 60 60)",
-				),
-				new Kolu.Tri(
-					[s, 0, 0],
-					[s, s, 0],
-					[s, s, s],
-					"rgb(90 90 90)",
-				),
-				new Kolu.Tri(
-					[s, 0, 0],
-					[s, 0, s],
-					[s, s, s],
-					"rgb(90 90 90)",
-				),
-				new Kolu.Tri(
-					[0, s, 0],
-					[0, s, s],
-					[s, s, 0],
-					"rgb(120 120 120)",
-				),
-				new Kolu.Tri(
-					[0, s, s],
-					[s, s, s],
-					[s, s, 0],
-					"rgb(120 120 120)",
-				),
-				new Kolu.Tri(
-					[0, 0, s],
-					[s, s, s],
-					[s, 0, s],
-					"rgb(150 150 150)",
-				),
-				new Kolu.Tri(
-					[0, 0, s],
-					[0, s, s],
-					[s, s, s],
-					"rgb(150 150 150)",
-				),
-			];
+			const cube = new KObject(
+				[
+					//top
+					new Tri([0, 0, s], [s, 0, s], [0, s, s], "red"),
+					new Tri([0, s, s], [s, 0, s], [s, s, s], "red"),
 
-			const kCvs = new Kolu.KoluCanvas(cvs);
-			for (const tri of tris) scene.putTri(tri);
-			scene.camera.pos = [s / 2, s / 2, 3 * s];
+					//bottom
+					new Tri([0, 0, 0], [s, 0, 0], [s, s, 0], "green"),
+					new Tri([0, 0, 0], [0, s, 0], [s, s, 0], "green"),
+
+					//front
+					new Tri([0, 0, 0], [s, 0, 0], [s, 0, s], "blue"),
+					new Tri([0, 0, 0], [0, 0, s], [s, 0, s], "blue"),
+
+					//back
+					new Tri([0, s, 0], [s, s, 0], [0, s, s], "black"),
+					new Tri([s, s, 0], [0, s, s], [s, s, s], "black"),
+
+					//left
+					new Tri([0, s, 0], [0, 0, 0], [0, 0, s], "yellow"),
+					new Tri([0, s, 0], [0, s, s], [0, 0, s], "yellow"),
+
+					//right
+					new Tri([s, 0, 0], [s, s, 0], [s, s, s], "purple"),
+					new Tri([s, 0, 0], [s, 0, s], [s, s, s], "purple"),
+				],
+				[-s / 2, -s / 2, -s * 3],
+				[s / 2, s / 2, s / 2],
+			);
+
+			const render = () => scene.render(kCvs, { wireframe: WIREFRAME });
+			const kCvs = new KCanvas(cvs);
+			scene.putKObj(cube);
 
 			const WIREFRAME = true;
 
 			cvs.onmousemove = (ev) => {
 				// MO FIX GIMBOL LOCK
-				// scene.camera.rot[2] =
-				// 	(ev.offsetY / cvs.height - 0.5) *
-				// 	Math.PI;
-				scene.camera.rot[1] =
-					(ev.offsetX / cvs.width - 0.5) *
-					Math.PI *
-					4;
-				scene.render(kCvs, { wireframe: WIREFRAME });
+				scene.camera.rot[2] = (ev.offsetY / cvs.height - 0.5) * Math.PI;
+				scene.camera.rot[1] = (ev.offsetX / cvs.width - 0.5) * Math.PI * 4;
+				render();
 			};
+
+			const rotCube = (timestamp) => {
+				const n = timestamp / 2000;
+				cube.transform = Mat.rot([n, n * 0.3, 0]).homo();
+				render();
+				requestAnimationFrame(rotCube);
+			};
+			requestAnimationFrame(rotCube);
 
 			const d = 20;
 			cvs.onkeydown = (ev) => {
@@ -135,14 +90,9 @@
 					let o = 0.05;
 					function an() {
 						scene.camera.fov -= o;
-						scene.render(kCvs, {
-							wireframe: WIREFRAME,
-						});
+						render();
 						o *= 0.8;
-						if (o > 0.001)
-							requestAnimationFrame(
-								an,
-							);
+						if (o > 0.001) requestAnimationFrame(an);
 					}
 					an();
 				}
@@ -150,27 +100,17 @@
 					let o = 0.05;
 					function an() {
 						scene.camera.fov += o;
-						scene.render(kCvs, {
-							wireframe: WIREFRAME,
-						});
+						render();
 						o *= 0.8;
-						if (o > 0.001)
-							requestAnimationFrame(
-								an,
-							);
+						if (o > 0.001) requestAnimationFrame(an);
 					}
 					an();
 				}
 				function mv(c, b) {
 					scene.camera.pos[c] += b;
-					scene.render(kCvs, {
-						wireframe: WIREFRAME,
-					});
+					render();
 					b *= 0.9;
-					if (Math.abs(b) > 0.1)
-						requestAnimationFrame(() =>
-							mv(c, b),
-						);
+					if (Math.abs(b) > 0.1) requestAnimationFrame(() => mv(c, b));
 				}
 				let c = 0;
 				if (k === "w" || k === "s") c = 2;
