@@ -67,8 +67,8 @@ export class Scene {
 		context.fillStyle = options?.bgColor ?? "white";
 		context.fillRect(0, 0, width, height);
 
-		const xMid = 0.5 * width;
-		const yMid = 0.5 * height;
+		const xMid = Math.round(0.5 * width);
+		const yMid = Math.round(0.5 * height);
 		for (const trig of perspTrigs.sort(({ z: z1 }, { z: z2 }) => z1 - z2)) {
 			let [[x1, y1], [x2, y2], [x3, y3]] = trig.projected;
 			if (options?.round) [x1, x2, x3, y1, y2, y3] = [x1, x2, x3, y1, y2, y3].map(Math.round);
