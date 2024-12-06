@@ -1,81 +1,63 @@
-export class Vec extends Array<number> {
-	constructor(...eles: number[]) {
-		super();
-		this.push(...eles);
-	}
-	static from(eles: number[]): Vec {
-		return new Vec(...eles);
+export namespace Vec {
+	export type vec3 = [number, number, number];
+
+	export type vec4 = [number, number, number, number];
+
+	export type vec = vec3 | vec4;
+
+	export function log(v: vec, lbl?: any): void {
+		console.log(`${lbl ?? ""}${lbl ? " ~ " : ""}vec(${v.length}) ${JSON.stringify(v)}`);
 	}
 
-	//MO NOTE Symbol.species usage discouraged
-	static get [Symbol.species](): typeof Array<number> {
-		return Array<number>;
+	export function vAdd<vecD extends vec>(u: vecD, v: vecD): vecD {
+		return <vecD>u.map((ele, i) => ele + v[i]);
 	}
 
-	get dim(): number {
-		return this.length;
+	export function vSub<vecD extends vec>(u: vecD, v: vecD): vecD {
+		return <vecD>u.map((ele, i) => ele - v[i]);
 	}
 
-	toString(): string {
-		return `Vec(${this.dim}) ${JSON.stringify(this)}`;
-	}
-	log(lbl?: any): void {
-		console.log(`${lbl ?? ""}${lbl ? " ~ " : ""}${this}`);
-	}
-
-	static fill(dim: number, x: number): Vec {
-		return Vec.from(Array(dim).fill(x));
-	}
-	static zero(dim: number): Vec {
-		return Vec.fill(dim, 0);
-	}
-	static std(dim: number, i: number): Vec {
-		const vec = Vec.zero(dim);
-		vec[i] = 1;
-		return vec;
-	}
-
-	static add(vec1: Vec, vec2: Vec): Vec {
-		return Vec.from(vec1.map((ele, i) => ele + vec2[i]));
-	}
-	static sub(vec1: Vec, vec2: Vec): Vec {
-		return Vec.from(vec1.map((ele, i) => ele - vec2[i]));
-	}
-	static dot(vec1: Vec, vec2: Vec): number {
+	export function dot(u: vec, v: vec): number {
 		let sum = 0;
-		for (let i = 0; i < vec1.dim; i++) sum += vec1[i] * vec2[i];
+		for (let i = 0; i < u.length; i++) sum += u[i] * v[i];
 		return sum;
 	}
-	static cross(vec1: Vec, vec2: Vec): Vec {
-		const [a1, a2, a3] = vec1;
-		const [b1, b2, b3] = vec2;
-		return new Vec(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
+
+	export function cross(u: vec3, v: vec3): vec3 {
+		const [a1, a2, a3] = u;
+		const [b1, b2, b3] = v;
+		return [a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1];
 	}
 
-	add(x: number): Vec {
-		return Vec.from(this.map((ele) => ele + x));
-	}
-	sub(x: number): Vec {
-		return this.add(-x);
-	}
-	mul(x: number): Vec {
-		return Vec.from(this.map((ele) => ele * x));
-	}
-	div(x: number): Vec {
-		return this.mul(1 / x);
+	export function add<vecD extends vec>(v: vecD, x: number): vecD {
+		return <vecD>v.map((ele) => ele + x);
 	}
 
-	norm(): number {
-		return Vec.dot(this, this) ** 0.5;
-	}
-	unit(): Vec {
-		return this.div(this.norm());
+	export function sub<vecD extends vec>(v: vecD, x: number): vecD {
+		return add(v, -x);
 	}
 
-	homo(): Vec {
-		return Vec.from(this.concat(1));
+	export function mul<vecD extends vec>(v: vecD, x: number): vecD {
+		return <vecD>v.map((ele) => ele * x);
 	}
-	unhomo(): Vec {
-		return Vec.from(this.slice(0, -1)).div(this[this.dim - 1]);
+
+	export function div<vecD extends vec>(v: vecD, x: number): vecD {
+		return mul(v, 1 / x);
+	}
+
+	export function norm(v: vec): number {
+		return dot(v, v) ** 0.5;
+	}
+
+	export function unit<vecD extends vec>(v: vecD): vecD {
+		return div(v, norm(v));
+	}
+
+	export function homo(v: vec3): vec4 {
+		return <vec4>v.concat(1);
+	}
+
+	export function unhomo(v: vec4): vec3 {
+		return <vec3>div(<vec3>v.slice(0, -1), v.at(-1));
 	}
 }

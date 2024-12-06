@@ -20,105 +20,200 @@
 	<body>
 		<canvas id="canvas3d" tabindex="1"></canvas>
 		<script type="module">
-			import { Scene, KObject, Tri, KCanvas, Mat } from "./src/index";
+			import * as Kolu from "./src/index";
+
+			const WIREFRAME = true;
+			const NOALPHA = false;
+			const DIST = 50;
+			const DECAY = 0.85;
+			const CUBECNT = 10;
+			const DISP = 10;
 
 			const cvs = document.getElementById("canvas3d");
 			cvs.width = window.innerWidth;
 			cvs.height = window.innerHeight;
 
-			const s = cvs.width * 0.3;
-			const scene = new Scene();
+			const kcvs = new Kolu.Cvs(cvs, { noAlpha: NOALPHA });
+			const scene = new Kolu.Scene();
+			const render = () => scene.render(kcvs, { wireframe: WIREFRAME });
 
-			const cube = new KObject(
-				[
-					//top
-					new Tri([0, 0, s], [s, 0, s], [0, s, s], "red"),
-					new Tri([0, s, s], [s, 0, s], [s, s, s], "red"),
+			const w = cvs.width * 0.3;
+			const cubeTrigs = [
+				//top
+				new Kolu.Tri(
+					[
+						[0, 0, w],
+						[w, 0, w],
+						[0, w, w],
+					],
+					"red",
+				),
+				new Kolu.Tri(
+					[
+						[0, w, w],
+						[w, 0, w],
+						[w, w, w],
+					],
+					"red",
+				),
 
-					//bottom
-					new Tri([0, 0, 0], [s, 0, 0], [s, s, 0], "green"),
-					new Tri([0, 0, 0], [0, s, 0], [s, s, 0], "green"),
+				//bottom
+				new Kolu.Tri(
+					[
+						[0, 0, 0],
+						[w, 0, 0],
+						[w, w, 0],
+					],
+					"green",
+				),
+				new Kolu.Tri(
+					[
+						[0, 0, 0],
+						[0, w, 0],
+						[w, w, 0],
+					],
+					"green",
+				),
 
-					//front
-					new Tri([0, 0, 0], [s, 0, 0], [s, 0, s], "blue"),
-					new Tri([0, 0, 0], [0, 0, s], [s, 0, s], "blue"),
+				//front
+				new Kolu.Tri(
+					[
+						[0, 0, 0],
+						[w, 0, 0],
+						[w, 0, w],
+					],
+					"blue",
+				),
+				new Kolu.Tri(
+					[
+						[0, 0, 0],
+						[0, 0, w],
+						[w, 0, w],
+					],
+					"blue",
+				),
 
-					//back
-					new Tri([0, s, 0], [s, s, 0], [0, s, s], "black"),
-					new Tri([s, s, 0], [0, s, s], [s, s, s], "black"),
+				//back
+				new Kolu.Tri(
+					[
+						[0, w, 0],
+						[w, w, 0],
+						[0, w, w],
+					],
+					"black",
+				),
+				new Kolu.Tri(
+					[
+						[w, w, 0],
+						[0, w, w],
+						[w, w, w],
+					],
+					"black",
+				),
 
-					//left
-					new Tri([0, s, 0], [0, 0, 0], [0, 0, s], "yellow"),
-					new Tri([0, s, 0], [0, s, s], [0, 0, s], "yellow"),
+				//left
+				new Kolu.Tri(
+					[
+						[0, w, 0],
+						[0, 0, 0],
+						[0, 0, w],
+					],
+					"yellow",
+				),
+				new Kolu.Tri(
+					[
+						[0, w, 0],
+						[0, w, w],
+						[0, 0, w],
+					],
+					"yellow",
+				),
 
-					//right
-					new Tri([s, 0, 0], [s, s, 0], [s, s, s], "purple"),
-					new Tri([s, 0, 0], [s, 0, s], [s, s, s], "purple"),
-				],
-				[-s / 2, -s / 2, -s * 3],
-				[s / 2, s / 2, s / 2],
-			);
+				//right
+				new Kolu.Tri(
+					[
+						[w, 0, 0],
+						[w, w, 0],
+						[w, w, w],
+					],
+					"purple",
+				),
+				new Kolu.Tri(
+					[
+						[w, 0, 0],
+						[w, 0, w],
+						[w, w, w],
+					],
+					"purple",
+				),
+			];
 
-			const render = () => scene.render(kCvs, { wireframe: WIREFRAME });
-			const kCvs = new KCanvas(cvs);
-			scene.putKObj(cube);
-
-			const WIREFRAME = true;
+			const cubes = [];
+			for (let i = 0; i < CUBECNT; i++) {
+				cubes.push(
+					new Kolu.Obj(
+						cubeTrigs,
+						[
+							(Math.random() - 0.5) * DISP * w,
+							(Math.random() - 0.5) * DISP * w,
+							(Math.random() - 0.5) * DISP * w,
+						],
+						[w / 2, w / 2, w / 2],
+					),
+				);
+			}
+			for (const cube of cubes) scene.putObj(cube);
 
 			cvs.onmousemove = (ev) => {
 				// MO FIX GIMBOL LOCK
-				scene.camera.rot[2] = (ev.offsetY / cvs.height - 0.5) * Math.PI;
-				scene.camera.rot[1] = (ev.offsetX / cvs.width - 0.5) * Math.PI * 4;
-				render();
+				scene.cam.setAxisRot(1, (ev.offsetX / cvs.width - 0.5) * 180 * 2);
+				scene.cam.setAxisRot(2, (ev.offsetY / cvs.height - 0.5) * 180);
 			};
 
+			cvs.onkeydown = (ev) => {
+				const key = ev.key.toLowerCase();
+				const mv = [0, 0, 0];
+				switch (key) {
+					case "w":
+						mv[2] = -DIST;
+						break;
+					case "s":
+						mv[2] = DIST;
+						break;
+					case "d":
+						mv[0] = -DIST;
+						break;
+					case "a":
+						mv[0] = DIST;
+						break;
+				}
+				const worldmv = Kolu.Mat.transform(Kolu.Mat.rot(scene.cam.rot), mv);
+
+				const m = (wm) => {
+					if (Kolu.Vec.norm(wm) < 1) return;
+					scene.cam.pos = Kolu.Vec.vAdd(scene.cam.pos, wm);
+					requestAnimationFrame(() => m(Kolu.Vec.mul(wm, DECAY)));
+				};
+				m(worldmv);
+			};
+
+			const ns = [...Array(cubes.length)].map(() => Math.random() * 50);
+			const a = [...Array(cubes.length)].map(() => Math.random());
+			const b = [...Array(cubes.length)].map(() => Math.random());
 			const rotCube = (timestamp) => {
-				const n = timestamp / 2000;
-				cube.transform = Mat.rot([n, n * 0.3, 0]).homo();
-				render();
+				for (let i = 0; i < cubes.length; i++) {
+					const n = timestamp / ns[i];
+					cubes[i].setTransform(Kolu.Mat.rot([n * a[i], n * b[i], 0], { deg: true }));
+				}
 				requestAnimationFrame(rotCube);
 			};
 			requestAnimationFrame(rotCube);
 
-			const d = 20;
-			cvs.onkeydown = (ev) => {
-				const k = ev.key.toLowerCase();
-				let a = 0;
-				if (k === "s" || k === "a" || k === "q") a = d;
-				if (k === "w" || k === "d" || k === "e") a = -d;
-				if (k === "n") {
-					let o = 0.05;
-					function an() {
-						scene.camera.fov -= o;
-						render();
-						o *= 0.8;
-						if (o > 0.001) requestAnimationFrame(an);
-					}
-					an();
-				}
-				if (k === "m") {
-					let o = 0.05;
-					function an() {
-						scene.camera.fov += o;
-						render();
-						o *= 0.8;
-						if (o > 0.001) requestAnimationFrame(an);
-					}
-					an();
-				}
-				function mv(c, b) {
-					scene.camera.pos[c] += b;
-					render();
-					b *= 0.9;
-					if (Math.abs(b) > 0.1) requestAnimationFrame(() => mv(c, b));
-				}
-				let c = 0;
-				if (k === "w" || k === "s") c = 2;
-				if (k === "d" || k === "a") c = 0;
-				if (k === "e" || k === "q") c = 1;
-
-				if (a !== 0) mv(c, a);
+			const main = () => {
+				render();
+				requestAnimationFrame(main);
 			};
+			main();
 		</script>
 	</body>
 </html>

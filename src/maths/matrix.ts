@@ -1,95 +1,109 @@
-import { Vec3 } from "../types";
+import { deg2Rad } from "../utils/utils";
 import { Vec } from "./vector";
 
-export class Mat extends Array<Vec> {
-	constructor(...rows: (Vec | Array<number>)[]) {
-		super();
-		this.push(...rows.map(Vec.from));
-	}
-	static from(rows: (Vec | Array<number>)[]): Mat {
-		return new Mat(...rows);
+// 3x3 and 4x4 matrices
+export namespace Mat {
+	export type mat3 = [Vec.vec3, Vec.vec3, Vec.vec3];
+
+	export type mat4 = [Vec.vec4, Vec.vec4, Vec.vec4, Vec.vec4];
+
+	export type mat = mat3 | mat4;
+
+	export function log(mat: mat, lbl?: any): void {
+		console.log(
+			`${lbl ?? ""}${lbl ? " ~ " : ""}mat(${mat.length}x${mat.length})\n[${mat
+				.map((row) => JSON.stringify(row))
+				.join("\n ")}]`,
+		);
 	}
 
-	//MO NOTE Symbol.species usage discouraged
-	static get [Symbol.species](): typeof Array<Vec> {
-		return Array<Vec>;
+	export function zero<d extends 3 | 4, matD extends d extends 3 ? mat3 : mat4>(dim: d): matD {
+		return <matD>[...Array(dim)].map(() => Array(dim).fill(0));
 	}
 
-	get row(): number {
-		return this.length;
-	}
-	get col(): number {
-		return this[0]?.dim ?? 0;
-	}
-
-	toString(): string {
-		return `Mat(${this.row}x${this.col})\n[${this.map((row) => JSON.stringify(row)).join("\n ")}]`;
-	}
-	log(lbl?: any): void {
-		console.log(`${lbl ?? ""}${lbl ? " ~ " : ""}${this}`);
+	export function id<d extends 3 | 4>(dim: d): d extends 3 ? mat3 : mat4 {
+		const res = zero(dim);
+		for (let i = 0; i < dim; i++) res[i][i] = 1;
+		return res;
 	}
 
-	static fill(row: number, col: number, x: number): Mat {
-		return Mat.from([...Array(row)].map(() => Array(col).fill(x)));
-	}
-	static zero(row: number, col: number): Mat {
-		return Mat.fill(row, col, 0);
-	}
-	static id(dim: number): Mat {
-		const mat = Mat.zero(dim, dim);
-		for (let i = 0; i < dim; i++) mat[i][i] = 1;
-		return mat;
-	}
-	static rot(rotVec: Vec | Vec3): Mat {
+	export function rot(rotVec: Vec.vec3, options?: { deg?: boolean }): mat3 {
+		if (options?.deg) rotVec = <Vec.vec3>rotVec.map(deg2Rad);
 		const [sA, sB, sC] = rotVec.map(Math.sin);
 		const [cA, cB, cC] = rotVec.map(Math.cos);
-		const yaw = new Mat([cA, -sA, 0], [sA, cA, 0], [0, 0, 1]);
-		const pitch = new Mat([cB, 0, sB], [0, 1, 0], [-sB, 0, cB]);
-		const roll = new Mat([1, 0, 0], [0, cC, -sC], [0, sC, cC]);
-		return Mat.mul(yaw, Mat.mul(pitch, roll));
+
+		const yaw = <mat3>[
+			[cA, -sA, 0],
+			[sA, cA, 0],
+			[0, 0, 1],
+		];
+		const pitch = <mat3>[
+			[cB, 0, sB],
+			[0, 1, 0],
+			[-sB, 0, cB],
+		];
+		const roll = <mat3>[
+			[1, 0, 0],
+			[0, cC, -sC],
+			[0, sC, cC],
+		];
+
+		return mMul(yaw, mMul(pitch, roll));
 	}
 
-	colAt(col: number): Vec {
-		return Vec.from(this.map((row) => row[col]));
+	export function colAt<matD extends mat, vecD extends matD extends mat3 ? Vec.vec3 : Vec.vec4>(
+		m: matD,
+		col: number,
+	): vecD {
+		return <vecD>m.map((row) => row[col]);
 	}
 
-	static add(mat1: Mat, mat2: Mat): Mat {
-		return Mat.from(mat1.map((row, i) => Vec.add(row, mat2[i])));
+	export function mAdd<matD extends mat>(m: matD, n: matD): matD {
+		return <matD>m.map((row, i) => Vec.vAdd(row, n[i]));
 	}
-	static sub(mat1: Mat, mat2: Mat): Mat {
-		return Mat.from(mat1.map((row, i) => Vec.sub(row, mat2[i])));
+
+	export function mSub<matD extends mat>(m: matD, n: matD): matD {
+		return <matD>m.map((row, i) => Vec.vSub(row, n[i]));
 	}
-	static mul(mat1: Mat, mat2: Mat): Mat {
-		const mat = Mat.zero(mat1.row, mat2.col);
-		for (let i = 0; i < mat1.row; i++) {
-			for (let j = 0; j < mat2.col; j++) {
-				mat[i][j] = Vec.dot(mat1[i], mat2.colAt(j));
+
+	export function mMul<matD extends mat>(m: matD, n: matD): matD {
+		const res: matD = zero(m.length);
+		for (let i = 0; i < m.length; i++) {
+			for (let j = 0; j < n.length; j++) {
+				res[i][j] = Vec.dot(m[i], colAt(n, j));
 			}
 		}
-		return mat;
+		return res;
 	}
 
-	add(x: number): Mat {
-		return Mat.from(this.map((row) => row.add(x)));
-	}
-	sub(x: number): Mat {
-		return this.add(-x);
-	}
-	mul(x: number): Mat {
-		return Mat.from(this.map((row) => row.mul(x)));
-	}
-	div(x: number): Mat {
-		return this.mul(1 / x);
+	export function add<matD extends mat>(m: matD, x: number): matD {
+		return <matD>m.map((row) => Vec.add(row, x));
 	}
 
-	homo(delta: Array<number> | Vec = [0, 0, 0], scale: Array<number> | Vec = [0, 0, 0, 1]): Mat {
-		return Mat.from(this.map((row, i) => row.concat(delta[i])).concat([scale]));
+	export function sub<matD extends mat>(m: matD, x: number): matD {
+		return add(m, -x);
 	}
 
-	transform(vec: Vec): Vec {
-		return Vec.from(this.map((row) => Vec.dot(row, vec)));
+	export function mul<matD extends mat>(m: matD, x: number): matD {
+		return <matD>m.map((row) => Vec.mul(row, x));
 	}
-	transformHomo(vec: Vec): Vec {
-		return this.transform(vec.homo()).unhomo();
+
+	export function div<matD extends mat>(m: matD, x: number): matD {
+		return mul(m, 1 / x);
+	}
+
+	export function homo(m: mat3, delta: Vec.vec3 = [0, 0, 0], scale: Vec.vec4 = [0, 0, 0, 1]): mat4 {
+		return <mat4>m.map((row, i) => row.concat(delta[i])).concat([scale]);
+	}
+
+	export function transform<matD extends mat, vecD extends matD extends mat3 ? Vec.vec3 : Vec.vec4>(
+		m: matD,
+		v: vecD,
+	): vecD {
+		return <vecD>m.map((row) => Vec.dot(row, v));
+	}
+
+	export function transformHomo(mat: mat4, vec: Vec.vec3): Vec.vec3 {
+		return Vec.unhomo(transform(mat, Vec.homo(vec)));
 	}
 }

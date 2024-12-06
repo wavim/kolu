@@ -1,25 +1,18 @@
 import { Vec } from "../maths/vector";
-import { Vec3 } from "../types";
+import { deg2Rad } from "../utils/utils";
 
 export class Cam {
-	_pos: Vec;
-	_rot: Vec;
+	constructor(public pos: Vec.vec3 = [0, 0, 0], public rot: Vec.vec3 = [0, 0, 0], public fov: number = Math.PI / 2) {}
 
-	constructor(pos?: Vec | Vec3, rot?: Vec | Vec3, public fov: number = Math.PI / 2) {
-		this._pos = Vec.from(pos ?? [0, 0, 0]);
-		this._rot = Vec.from(rot ?? [0, 0, 0]);
+	setRot(deg: Vec.vec3): void {
+		this.rot = <Vec.vec3>deg.map(deg2Rad);
 	}
 
-	set pos(pos: Vec | Vec3) {
-		this._pos = Vec.from(pos);
+	setAxisRot(axis: number, deg: number): void {
+		this.rot[axis] = deg2Rad(deg);
 	}
-	set rot(rot: Vec | Vec3) {
-		this._rot = Vec.from(rot);
-	}
-	get pos(): Vec {
-		return this._pos;
-	}
-	get rot(): Vec {
-		return this._rot;
+
+	setFOV(deg: number): void {
+		this.fov = deg2Rad(deg);
 	}
 }
