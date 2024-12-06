@@ -24,11 +24,14 @@
 
 			const WIREFRAME = true;
 			const NOALPHA = true;
+			const BGCOLOR = "#ffe9ec";
+			const XSENS = 3;
+			const YSENS = 1.5;
 			const MVDIST = 50;
 			const MVDECAY = 0.85;
 			const CUBESCALE = 0.3;
-			const CUBECNT = 50;
-			const CUBEDISP = 10;
+			const CUBECNT = 80;
+			const CUBEDISP = 15;
 
 			const cvs = document.getElementById("canvas3d");
 			cvs.width = window.innerWidth;
@@ -36,7 +39,7 @@
 
 			const kcvs = new Kolu.Cvs(cvs, { noAlpha: NOALPHA });
 			const scene = new Kolu.Scene();
-			const render = () => scene.render(kcvs, { wireframe: WIREFRAME });
+			const render = () => scene.render(kcvs, { wireframe: WIREFRAME, bgColor: BGCOLOR });
 
 			const w = cvs.width * CUBESCALE;
 			const cubeTrigs = [
@@ -167,8 +170,8 @@
 
 			cvs.onmousemove = (ev) => {
 				// MO FIX GIMBOL LOCK
-				scene.cam.setAxisRot(1, (ev.offsetX / cvs.width - 0.5) * 180 * 2);
-				scene.cam.setAxisRot(2, (ev.offsetY / cvs.height - 0.5) * 180);
+				scene.cam.setAxisRot(1, (ev.offsetX / cvs.width - 0.5) * 180 * XSENS);
+				scene.cam.setAxisRot(2, (ev.offsetY / cvs.height - 0.5) * 180 * YSENS);
 			};
 
 			cvs.onkeydown = (ev) => {
@@ -198,7 +201,7 @@
 				m(worldmv);
 			};
 
-			const ns = [...Array(cubes.length)].map(() => Math.random() * 50);
+			const ns = [...Array(cubes.length)].map(() => (Math.random() + 1) * 10);
 			const a = [...Array(cubes.length)].map(() => Math.random());
 			const b = [...Array(cubes.length)].map(() => Math.random());
 			const rotCube = (timestamp) => {
