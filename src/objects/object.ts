@@ -22,6 +22,7 @@ export class Obj {
 					const transformed = Mat.transformHomo(this.transform, localFrame);
 					return Vec.vAdd(Vec.vAdd(transformed, this.origin), this.offset);
 				}),
+				tri.fill,
 			);
 		});
 	}

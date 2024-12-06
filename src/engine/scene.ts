@@ -27,7 +27,7 @@ export class Scene {
 		this.objs[i] = null;
 	}
 
-	render(koluCvs: Cvs, options?: { wireframe?: boolean }) {
+	render(koluCvs: Cvs, options?: { wireframe?: boolean; bgColor?: string }): void {
 		this.trigs = this.trigs.filter((tri) => tri);
 		this.objs = this.objs.filter((obj) => obj);
 
@@ -64,8 +64,8 @@ export class Scene {
 			});
 		}
 
-		context.clearRect(0, 0, width, height);
-		context.strokeStyle = koluCvs.alphaOn ? "black" : "white";
+		context.fillStyle = options?.bgColor ?? "white";
+		context.fillRect(0, 0, width, height);
 		for (const trig of perspTrigs.sort(({ z: z1 }, { z: z2 }) => z1 - z2)) {
 			const [[x1, y1], [x2, y2], [x3, y3]] = trig.projected;
 
@@ -73,9 +73,9 @@ export class Scene {
 			context.moveTo(0.5 * width + x1, 0.5 * height - y1);
 			context.lineTo(0.5 * width + x2, 0.5 * height - y2);
 			context.lineTo(0.5 * width + x3, 0.5 * height - y3);
-			context.lineTo(0.5 * width + x1, 0.5 * height - y1);
 
 			if (options?.wireframe) {
+				context.lineTo(0.5 * width + x1, 0.5 * height - y1);
 				context.stroke();
 				continue;
 			}

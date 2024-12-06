@@ -23,11 +23,12 @@
 			import * as Kolu from "./src/index";
 
 			const WIREFRAME = true;
-			const NOALPHA = false;
-			const DIST = 50;
-			const DECAY = 0.85;
-			const CUBECNT = 10;
-			const DISP = 10;
+			const NOALPHA = true;
+			const MVDIST = 50;
+			const MVDECAY = 0.85;
+			const CUBESCALE = 0.3;
+			const CUBECNT = 50;
+			const CUBEDISP = 10;
 
 			const cvs = document.getElementById("canvas3d");
 			cvs.width = window.innerWidth;
@@ -37,7 +38,7 @@
 			const scene = new Kolu.Scene();
 			const render = () => scene.render(kcvs, { wireframe: WIREFRAME });
 
-			const w = cvs.width * 0.3;
+			const w = cvs.width * CUBESCALE;
 			const cubeTrigs = [
 				//top
 				new Kolu.Tri(
@@ -154,9 +155,9 @@
 					new Kolu.Obj(
 						cubeTrigs,
 						[
-							(Math.random() - 0.5) * DISP * w,
-							(Math.random() - 0.5) * DISP * w,
-							(Math.random() - 0.5) * DISP * w,
+							(Math.random() - 0.5) * CUBEDISP * w,
+							(Math.random() - 0.5) * CUBEDISP * w,
+							(Math.random() - 0.5) * CUBEDISP * w,
 						],
 						[w / 2, w / 2, w / 2],
 					),
@@ -175,16 +176,16 @@
 				const mv = [0, 0, 0];
 				switch (key) {
 					case "w":
-						mv[2] = -DIST;
+						mv[2] = -MVDIST;
 						break;
 					case "s":
-						mv[2] = DIST;
+						mv[2] = MVDIST;
 						break;
 					case "d":
-						mv[0] = -DIST;
+						mv[0] = -MVDIST;
 						break;
 					case "a":
-						mv[0] = DIST;
+						mv[0] = MVDIST;
 						break;
 				}
 				const worldmv = Kolu.Mat.transform(Kolu.Mat.rot(scene.cam.rot), mv);
@@ -192,7 +193,7 @@
 				const m = (wm) => {
 					if (Kolu.Vec.norm(wm) < 1) return;
 					scene.cam.pos = Kolu.Vec.vAdd(scene.cam.pos, wm);
-					requestAnimationFrame(() => m(Kolu.Vec.mul(wm, DECAY)));
+					requestAnimationFrame(() => m(Kolu.Vec.mul(wm, MVDECAY)));
 				};
 				m(worldmv);
 			};
@@ -209,10 +210,17 @@
 			};
 			requestAnimationFrame(rotCube);
 
+			let fps_acc = 0;
 			const main = () => {
 				render();
+				fps_acc++;
 				requestAnimationFrame(main);
 			};
+			setInterval(() => {
+				console.clear();
+				console.log("fps", fps_acc);
+				fps_acc = 0;
+			}, 1000);
 			main();
 		</script>
 	</body>
