@@ -22,15 +22,16 @@
 		<script type="module">
 			import * as Kolu from "./src/index";
 
-			const WIREFRAME = true;
 			const NOALPHA = true;
+			const WIREFRAME = true;
 			const BGCOLOR = "#ffe9ec";
+			const ROUND = false;
 			const XSENS = 3;
 			const YSENS = 1.5;
 			const MVDIST = 50;
 			const MVDECAY = 0.85;
 			const CUBESCALE = 0.3;
-			const CUBECNT = 80;
+			const CUBECNT = 100;
 			const CUBEDISP = 15;
 
 			const cvs = document.getElementById("canvas3d");
@@ -39,7 +40,7 @@
 
 			const kcvs = new Kolu.Cvs(cvs, { noAlpha: NOALPHA });
 			const scene = new Kolu.Scene();
-			const render = () => scene.render(kcvs, { wireframe: WIREFRAME, bgColor: BGCOLOR });
+			const render = () => scene.render(kcvs, { wireframe: WIREFRAME, bgColor: BGCOLOR, round: ROUND });
 
 			const w = cvs.width * CUBESCALE;
 			const cubeTrigs = [
