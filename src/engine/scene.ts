@@ -27,7 +27,10 @@ export class Scene {
 		this.objs[i] = null;
 	}
 
-	render(koluCvs: Cvs, options?: { wireframe?: boolean; bgColor?: string; round?: boolean }): void {
+	render(
+		koluCvs: Cvs,
+		options?: { wireframe?: boolean; bgColor?: string; round?: boolean },
+	): void {
 		this.trigs = this.trigs.filter((tri) => tri);
 		this.objs = this.objs.filter((obj) => obj);
 
@@ -38,7 +41,10 @@ export class Scene {
 
 		const cam = this.cam;
 		const rotate = Mat.rot(cam.rot);
-		const frameAlign = Mat.homo(rotate, Mat.transform(rotate, Vec.mul(cam.pos, -1)));
+		const frameAlign = Mat.homo(
+			rotate,
+			Mat.transform(rotate, Vec.mul(cam.pos, -1)),
+		);
 		const invDist = (2 * Math.tan(0.5 * cam.fov)) / height;
 		const project = <Mat.mat4>[
 			[1, 0, 0, 0],
@@ -52,7 +58,9 @@ export class Scene {
 
 		const perspTrigs = [];
 		for (const trig of this.trigs.concat(objTrigs)) {
-			const projected = trig.vertices.map((v) => Mat.transformHomo(transform, v));
+			const projected = trig.vertices.map((v) =>
+				Mat.transformHomo(transform, v),
+			);
 
 			const z = Math.min(...projected.map((vertex) => vertex[2]));
 			if (z < 0) continue;
@@ -65,13 +73,17 @@ export class Scene {
 		}
 
 		context.fillStyle = options?.bgColor ?? "white";
-		context.fillRect(0, 0, width, height);
+		if (koluCvs.alpha) context.clearRect(0, 0, width, height);
+		else context.fillRect(0, 0, width, height);
 
 		const xMid = Math.round(0.5 * width);
 		const yMid = Math.round(0.5 * height);
 		for (const trig of perspTrigs.sort(({ z: z1 }, { z: z2 }) => z1 - z2)) {
 			let [[x1, y1], [x2, y2], [x3, y3]] = trig.projected;
-			if (options?.round) [x1, x2, x3, y1, y2, y3] = [x1, x2, x3, y1, y2, y3].map(Math.round);
+			if (options?.round)
+				[x1, x2, x3, y1, y2, y3] = [x1, x2, x3, y1, y2, y3].map(
+					Math.round,
+				);
 
 			context.beginPath();
 			context.moveTo(xMid + x1, yMid - y1);

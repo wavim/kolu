@@ -25,7 +25,7 @@
 
 			// disables backdrop alpha only
 			// still allows drawing rgba, but sped up
-			const NOALPHA = true;
+			const NOALPHA = false;
 			// desync canvas from event loops
 			const DESYNC = true;
 			const BGCOLOR = "rgb(230 230 230)";
@@ -51,9 +51,17 @@
 			cvs.width = window.innerWidth;
 			cvs.height = window.innerHeight;
 
-			const kcvs = new Kolu.Cvs(cvs, { noAlpha: NOALPHA, desync: DESYNC });
+			const kcvs = new Kolu.Cvs(cvs, {
+				noAlpha: NOALPHA,
+				desync: DESYNC,
+			});
 			const scene = new Kolu.Scene();
-			const render = () => scene.render(kcvs, { wireframe: WIREFRAME, bgColor: BGCOLOR, round: ROUND });
+			const render = () =>
+				scene.render(kcvs, {
+					wireframe: WIREFRAME,
+					bgColor: BGCOLOR,
+					round: ROUND,
+				});
 
 			const w = cvs.width * CUBESCALE;
 			const cubeTrigs = [
@@ -184,8 +192,14 @@
 
 			cvs.onmousemove = (ev) => {
 				// MO FIX GIMBOL LOCK
-				scene.cam.setAxisRot(1, (ev.offsetX / cvs.width - 0.5) * 180 * XSENS);
-				scene.cam.setAxisRot(2, (ev.offsetY / cvs.height - 0.5) * 180 * YSENS);
+				scene.cam.setAxisRot(
+					1,
+					(ev.offsetX / cvs.width - 0.5) * 180 * XSENS,
+				);
+				scene.cam.setAxisRot(
+					2,
+					(ev.offsetY / cvs.height - 0.5) * 180 * YSENS,
+				);
 			};
 
 			cvs.onkeydown = (ev) => {
@@ -205,7 +219,10 @@
 						mv[0] = MVDIST;
 						break;
 				}
-				const worldmv = Kolu.Mat.transform(Kolu.Mat.rot(scene.cam.rot), mv);
+				const worldmv = Kolu.Mat.transform(
+					Kolu.Mat.rot(scene.cam.rot),
+					mv,
+				);
 
 				const m = (wm) => {
 					if (Kolu.Vec.norm(wm) < 1) return;
@@ -215,13 +232,17 @@
 				m(worldmv);
 			};
 
-			const ns = [...Array(cubes.length)].map(() => (Math.random() + 1) * 10);
+			const ns = [...Array(cubes.length)].map(
+				() => (Math.random() + 1) * 10,
+			);
 			const a = [...Array(cubes.length)].map(() => Math.random());
 			const b = [...Array(cubes.length)].map(() => Math.random());
 			const rotCube = (timestamp) => {
 				for (let i = 0; i < cubes.length; i++) {
 					const n = timestamp / ns[i];
-					cubes[i].setTransform(Kolu.Mat.rot([n * a[i], n * b[i], 0], { deg: true }));
+					cubes[i].setTransform(
+						Kolu.Mat.rot([n * a[i], n * b[i], 0], { deg: true }),
+					);
 				}
 				requestAnimationFrame(rotCube);
 			};
