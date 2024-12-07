@@ -72,9 +72,10 @@ export class Scene {
 			});
 		}
 
-		context.fillStyle = options?.bgColor ?? "white";
+		context.fillStyle =
+			options?.bgColor ?? (koluCvs.alpha ? "rgb(0,0,0,0)" : "white");
 		if (koluCvs.alpha) context.clearRect(0, 0, width, height);
-		else context.fillRect(0, 0, width, height);
+		context.fillRect(0, 0, width, height);
 
 		const xMid = Math.round(0.5 * width);
 		const yMid = Math.round(0.5 * height);
