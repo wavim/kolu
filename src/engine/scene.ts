@@ -73,7 +73,7 @@ export class Scene {
 		}
 
 		context.fillStyle =
-			options?.bgColor ?? (koluCvs.alpha ? "rgb(0,0,0,0)" : "white");
+			options?.bgColor ?? (koluCvs.alpha ? "rgba(0,0,0,0)" : "white");
 		if (koluCvs.alpha) context.clearRect(0, 0, width, height);
 		context.fillRect(0, 0, width, height);
 
