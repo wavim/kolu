@@ -1,4 +1,4 @@
-import { deg2Rad } from "../utils/utils";
+import { deg2Rad } from "./utils";
 import { Vec } from "./vector";
 
 // 3x3 and 4x4 matrices

@@ -1,5 +1,5 @@
 import { Vec } from "../maths/vector";
-import { deg2Rad } from "../utils/utils";
+import { deg2Rad } from "../maths/utils";
 
 export class Cam {
 	constructor(public pos: Vec.vec3 = [0, 0, 0], public rot: Vec.vec3 = [0, 0, 0], public fov: number = Math.PI / 2) {}
