@@ -14,6 +14,7 @@
 		<style>
 			canvas {
 				background-color: whitesmoke;
+				cursor: none;
 			}
 		</style>
 	</head>
@@ -22,23 +23,35 @@
 		<script type="module">
 			import * as Kolu from "./src/index";
 
+			// disables backdrop alpha only
+			// still allows drawing rgba, but sped up
 			const NOALPHA = true;
-			const WIREFRAME = true;
+			// desync canvas from event loops
+			const DESYNC = true;
 			const BGCOLOR = "#ffe9ec";
+			const WIREFRAME = false;
+			// disables sub-pixel rendering
+			// not recommended, alias issues
 			const ROUND = false;
+			// mouse x and y sensitivities * 180deg
 			const XSENS = 3;
 			const YSENS = 1.5;
+			// move distance on WASD
 			const MVDIST = 50;
+			// move accel decay rate
 			const MVDECAY = 0.85;
+			// cube size * canvas width
 			const CUBESCALE = 0.3;
-			const CUBECNT = 100;
-			const CUBEDISP = 15;
+			const CUBECNT = 50;
+			// cube dispersion in space
+			const CUBEDISP = 13;
+			const CUBEALPHA = 1;
 
 			const cvs = document.getElementById("canvas3d");
 			cvs.width = window.innerWidth;
 			cvs.height = window.innerHeight;
 
-			const kcvs = new Kolu.Cvs(cvs, { noAlpha: NOALPHA });
+			const kcvs = new Kolu.Cvs(cvs, { noAlpha: NOALPHA, desync: DESYNC });
 			const scene = new Kolu.Scene();
 			const render = () => scene.render(kcvs, { wireframe: WIREFRAME, bgColor: BGCOLOR, round: ROUND });
 
@@ -51,7 +64,7 @@
 						[w, 0, w],
 						[0, w, w],
 					],
-					"red",
+					`rgba(255,0,0,${CUBEALPHA})`,
 				),
 				new Kolu.Tri(
 					[
@@ -59,7 +72,7 @@
 						[w, 0, w],
 						[w, w, w],
 					],
-					"red",
+					`rgba(255,0,0,${CUBEALPHA})`,
 				),
 
 				//bottom
@@ -69,7 +82,7 @@
 						[w, 0, 0],
 						[w, w, 0],
 					],
-					"green",
+					`rgba(0,255,0,${CUBEALPHA})`,
 				),
 				new Kolu.Tri(
 					[
@@ -77,7 +90,7 @@
 						[0, w, 0],
 						[w, w, 0],
 					],
-					"green",
+					`rgba(0,255,0,${CUBEALPHA})`,
 				),
 
 				//front
@@ -87,7 +100,7 @@
 						[w, 0, 0],
 						[w, 0, w],
 					],
-					"blue",
+					`rgba(0,0,255,${CUBEALPHA})`,
 				),
 				new Kolu.Tri(
 					[
@@ -95,7 +108,7 @@
 						[0, 0, w],
 						[w, 0, w],
 					],
-					"blue",
+					`rgba(0,0,255,${CUBEALPHA})`,
 				),
 
 				//back
@@ -105,7 +118,7 @@
 						[w, w, 0],
 						[0, w, w],
 					],
-					"black",
+					`rgba(0,0,0,${CUBEALPHA})`,
 				),
 				new Kolu.Tri(
 					[
@@ -113,7 +126,7 @@
 						[0, w, w],
 						[w, w, w],
 					],
-					"black",
+					`rgba(0,0,0,${CUBEALPHA})`,
 				),
 
 				//left
@@ -123,7 +136,7 @@
 						[0, 0, 0],
 						[0, 0, w],
 					],
-					"yellow",
+					`rgba(255,255,0,${CUBEALPHA})`,
 				),
 				new Kolu.Tri(
 					[
@@ -131,7 +144,7 @@
 						[0, w, w],
 						[0, 0, w],
 					],
-					"yellow",
+					`rgba(255,255,0,${CUBEALPHA})`,
 				),
 
 				//right
@@ -141,7 +154,7 @@
 						[w, w, 0],
 						[w, w, w],
 					],
-					"purple",
+					`rgba(0,255,255,${CUBEALPHA})`,
 				),
 				new Kolu.Tri(
 					[
@@ -149,7 +162,7 @@
 						[w, 0, w],
 						[w, w, w],
 					],
-					"purple",
+					`rgba(0,255,255,${CUBEALPHA})`,
 				),
 			];
 
