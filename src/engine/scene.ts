@@ -29,7 +29,7 @@ export class Scene {
 
 	render(
 		koluCvs: Cvs,
-		options?: { wireframe?: boolean; bgColor?: string; round?: boolean },
+		options?: { wireframe?: boolean; round?: boolean },
 	): void {
 		this.trigs = this.trigs.filter((tri) => tri);
 		this.objs = this.objs.filter((obj) => obj);
@@ -72,10 +72,7 @@ export class Scene {
 			});
 		}
 
-		context.fillStyle =
-			options?.bgColor ?? (koluCvs.alpha ? "rgba(0,0,0,0)" : "white");
-		if (koluCvs.alpha) context.clearRect(0, 0, width, height);
-		context.fillRect(0, 0, width, height);
+		context.clearRect(0, 0, width, height);
 
 		const xMid = Math.round(0.5 * width);
 		const yMid = Math.round(0.5 * height);

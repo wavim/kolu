@@ -28,7 +28,6 @@
 			const NOALPHA = false;
 			// desync canvas from event loops
 			const DESYNC = true;
-			const BGCOLOR = "rgb(230 230 230)";
 			const WIREFRAME = true;
 			// disables sub-pixel rendering
 			// not recommended, alias issues
@@ -59,7 +58,6 @@
 			const render = () =>
 				scene.render(kcvs, {
 					wireframe: WIREFRAME,
-					bgColor: BGCOLOR,
 					round: ROUND,
 				});
 
