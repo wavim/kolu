@@ -190,14 +190,8 @@
 
 			cvs.onmousemove = (ev) => {
 				// MO FIX GIMBOL LOCK
-				scene.cam.setAxisRot(
-					1,
-					(ev.offsetX / cvs.width - 0.5) * 180 * XSENS,
-				);
-				scene.cam.setAxisRot(
-					2,
-					(ev.offsetY / cvs.height - 0.5) * 180 * YSENS,
-				);
+				scene.cam.setAxisRot(1, (ev.offsetX / cvs.width - 0.5) * 180 * XSENS);
+				scene.cam.setAxisRot(2, (ev.offsetY / cvs.height - 0.5) * 180 * YSENS);
 			};
 
 			cvs.onkeydown = (ev) => {
@@ -217,10 +211,7 @@
 						mv[0] = MVDIST;
 						break;
 				}
-				const worldmv = Kolu.Mat.transform(
-					Kolu.Mat.rot(scene.cam.rot),
-					mv,
-				);
+				const worldmv = Kolu.Mat.transform(Kolu.Mat.rot(scene.cam.rot), mv);
 
 				const m = (wm) => {
 					if (Kolu.Vec.norm(wm) < 1) return;
@@ -230,21 +221,17 @@
 				m(worldmv);
 			};
 
-			const ns = [...Array(cubes.length)].map(
-				() => (Math.random() + 1) * 10,
-			);
+			const ns = [...Array(cubes.length)].map(() => (Math.random() + 1) * 10);
 			const a = [...Array(cubes.length)].map(() => Math.random());
 			const b = [...Array(cubes.length)].map(() => Math.random());
 			const rotCube = (timestamp) => {
 				for (let i = 0; i < cubes.length; i++) {
 					const n = timestamp / ns[i];
-					cubes[i].setTransform(
-						Kolu.Mat.rot([n * a[i], n * b[i], 0], { deg: true }),
-					);
+					cubes[i].setTransform(Kolu.Mat.rot([n * a[i], n * b[i], 0], { deg: true }));
 				}
 				requestAnimationFrame(rotCube);
 			};
-			requestAnimationFrame(rotCube);
+			rotCube();
 
 			let fps_acc = 0;
 			const main = () => {

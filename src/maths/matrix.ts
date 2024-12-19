@@ -48,7 +48,7 @@ export namespace Mat {
 			[0, sC, cC],
 		];
 
-		return mMul(yaw, mMul(pitch, roll));
+		return mMul(roll, mMul(pitch, yaw));
 	}
 
 	export function colAt<matD extends mat, vecD extends matD extends mat3 ? Vec.vec3 : Vec.vec4>(
