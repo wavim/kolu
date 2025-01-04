@@ -6,6 +6,7 @@ Algorithm used for culling is the [painter's algorithm](https://en.wikipedia.org
 This is for performance since everything in Kolu is rendered by the CPU.
 
 A demo is available at [GitHub Page](https://carbonicsoda.github.io/kolu/).
+To play with the demo clone the repository, edit /index.html and use Vite.
 
 This project is discontinued as my original expectations are (roughly) met.  
 And that continue working on it may not be worth it and might even trash performance.
