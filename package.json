@@ -11,8 +11,8 @@
 	},
 	"author": "carbonsoda",
 	"license": "MIT",
-	"dependencies": {
-		"typescript": "^5.7.2",
-		"vite": "^6.0.9"
+	"devDependencies": {
+		"typescript": "^5.7.3",
+		"vite": "^6.0.11"
 	}
 }
