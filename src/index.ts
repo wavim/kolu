@@ -175,7 +175,10 @@ for (const cubeObj of cubeObjs) scene.putObj(cubeObj);
 
 cvs.onmousemove = (ev) => {
 	scene.cam.setAxisRot(1, (ev.offsetX / cvs.width - 0.5) * 360 * XSENS);
-	scene.cam.setAxisRot(2, Math.min((ev.offsetY / cvs.height - 0.5) * 85 * YSENS, 85));
+	scene.cam.setAxisRot(
+		2,
+		Math.min((ev.offsetY / cvs.height - 0.5) * 85 * YSENS, 85),
+	);
 };
 
 cvs.onkeydown = (ev) => {
@@ -205,13 +208,19 @@ cvs.onkeydown = (ev) => {
 	move(worldMoveVec);
 };
 
-const slowDownConst = [...Array(cubeObjs.length)].map(() => (Math.random() + 1) * 10);
+const slowDownConst = [...Array(cubeObjs.length)].map(
+	() => (Math.random() + 1) * 10,
+);
 const axis1Speed = [...Array(cubeObjs.length)].map(() => Math.random());
 const axis2Speed = [...Array(cubeObjs.length)].map(() => Math.random());
 const rotCube = (timestamp: DOMHighResTimeStamp) => {
 	for (let i = 0; i < cubeObjs.length; i++) {
 		const globSpeed = timestamp / slowDownConst[i];
-		cubeObjs[i].setTransform(Mat.rot([globSpeed * axis1Speed[i], globSpeed * axis2Speed[i], 0], { deg: true }));
+		cubeObjs[i].setTransform(
+			Mat.rot([globSpeed * axis1Speed[i], globSpeed * axis2Speed[i], 0], {
+				deg: true,
+			}),
+		);
 	}
 	requestAnimationFrame(rotCube);
 };

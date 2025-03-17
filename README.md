@@ -5,7 +5,7 @@ Maths used are perspective projection, relative coordinate frames and some other
 Algorithm used for culling is the [painter's algorithm](https://en.wikipedia.org/wiki/Painter's_algorithm).
 This is for performance since everything in Kolu is rendered by the CPU.
 
-A demo is available at [GitHub Page](https://carbonicsoda.github.io/kolu/).
+A demo is available at [GitHub Page](https://carbonicsoda.github.io/kolu/) (Move with WASD).
 To play with the demo clone the repository, edit src/index.ts and run `npx vite watch`.
 
 This project is discontinued as my original expectations are (roughly) met.  
