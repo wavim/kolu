@@ -158,7 +158,7 @@ const main = () => {
 			delta,
 			configs.mvdecay,
 			1,
-			(mv) => (scene.cam.pos = Vec.vAdd(scene.cam.pos, mv)),
+			(mv) => (scene.cam.pos = Vec.vSub(scene.cam.pos, mv)),
 			Vec.norm,
 			Vec.mul,
 		);
