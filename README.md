@@ -1,17 +1,22 @@
-This project is an attempt to render 3D scenes in HTMLCanvas, without the use of WebGL.
+This project is an attempt to render 3D scenes in HTMLCanvas, without the use of
+WebGL.
 
-Maths used are perspective projection, relative coordinate frames and some other linear algebra stuff.
+Perspective projection, relative coordinate frames and some other linear algebra
+stuff are used. The
+[painter's algorithm](https://en.wikipedia.org/wiki/Painter's_algorithm) is used
+for culling for performance since everything in Kolu is rendered primarily by
+the CPU.
 
-Algorithm used for culling is the [painter's algorithm](https://en.wikipedia.org/wiki/Painter's_algorithm).
-This is for performance since everything in Kolu is rendered by the CPU.
+A demo is available at the [GitHub Page](https://carbonicsoda.github.io/kolu/):
 
-A demo is available at [GitHub Page](https://carbonicsoda.github.io/kolu/) (Move with WASD).
-To play with the demo clone the repository, edit src/index.ts and run `npx vite watch`.
+- Move along the x-/y-axis with WASD
+- Increase or decrease FOV with I(n)/O(ut)
 
-This project is discontinued as my original expectations are (roughly) met.  
-And that continue working on it may not be worth it and might even trash performance.
+To play with the demo's options clone the repository, edit src/index.ts and run
+`npx vite watch`.
 
-Of course, this is only meant to be a fun toy anyways,
-as probably everyone would choose to use 3.js or something similar nowadays.
-
-But I guess learning a lot during building this project is all that matters :D
+This project is discontinued as my original expectations are (roughly) met, and
+that continue working on it may not be worth it and might even trash
+performance. Of course, this is only meant to be a fun toy anyways, as probably
+everyone would choose to use more functional libraries like 3.js or something
+similar to utilize WebGL/WebGPU nowadays.

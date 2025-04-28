@@ -6,10 +6,10 @@ export class Cvs {
 
 	constructor(
 		canvas?: HTMLCanvasElement,
-		options?: { noAlpha?: boolean; desync?: boolean },
+		options?: { solidbg?: boolean; desync?: boolean },
 	) {
 		this.canvas = canvas ?? document.createElement("canvas");
-		this.alpha = !options?.noAlpha;
+		this.alpha = !options?.solidbg;
 		this.desync = !!options?.desync;
 		this.context = this.canvas.getContext("2d", {
 			alpha: this.alpha,
