@@ -17,7 +17,9 @@ export namespace Mat {
 		);
 	}
 
-	export function zero<d extends 3 | 4, matD extends d extends 3 ? mat3 : mat4>(dim: d): matD {
+	export function zero<d extends 3 | 4, matD extends d extends 3 ? mat3 : mat4>(
+		dim: d,
+	): matD {
 		return <matD>[...Array(dim)].map(() => Array(dim).fill(0));
 	}
 
@@ -51,10 +53,10 @@ export namespace Mat {
 		return mMul(roll, mMul(pitch, yaw));
 	}
 
-	export function colAt<matD extends mat, vecD extends matD extends mat3 ? Vec.vec3 : Vec.vec4>(
-		m: matD,
-		col: number,
-	): vecD {
+	export function colAt<
+		matD extends mat,
+		vecD extends matD extends mat3 ? Vec.vec3 : Vec.vec4,
+	>(m: matD, col: number): vecD {
 		return <vecD>m.map((row) => row[col]);
 	}
 
@@ -92,14 +94,18 @@ export namespace Mat {
 		return mul(m, 1 / x);
 	}
 
-	export function homo(m: mat3, delta: Vec.vec3 = [0, 0, 0], scale: Vec.vec4 = [0, 0, 0, 1]): mat4 {
+	export function homo(
+		m: mat3,
+		delta: Vec.vec3 = [0, 0, 0],
+		scale: Vec.vec4 = [0, 0, 0, 1],
+	): mat4 {
 		return <mat4>m.map((row, i) => row.concat(delta[i])).concat([scale]);
 	}
 
-	export function transform<matD extends mat, vecD extends matD extends mat3 ? Vec.vec3 : Vec.vec4>(
-		m: matD,
-		v: vecD,
-	): vecD {
+	export function transform<
+		matD extends mat,
+		vecD extends matD extends mat3 ? Vec.vec3 : Vec.vec4,
+	>(m: matD, v: vecD): vecD {
 		return <vecD>m.map((row) => Vec.dot(row, v));
 	}
 

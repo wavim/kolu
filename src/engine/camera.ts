@@ -2,7 +2,11 @@ import { Vec } from "../maths/vector";
 import { deg2Rad } from "../maths/utils";
 
 export class Cam {
-	constructor(public pos: Vec.vec3 = [0, 0, 0], public rot: Vec.vec3 = [0, 0, 0], public fov: number = Math.PI / 2) {}
+	constructor(
+		public pos: Vec.vec3 = [0, 0, 0],
+		public rot: Vec.vec3 = [0, 0, 0],
+		public fov: number = Math.PI / 2,
+	) {}
 
 	setRot(deg: Vec.vec3): void {
 		this.rot = <Vec.vec3>deg.map(deg2Rad);

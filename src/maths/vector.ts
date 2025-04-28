@@ -6,7 +6,9 @@ export namespace Vec {
 	export type vec = vec3 | vec4;
 
 	export function log(v: vec, lbl?: any): void {
-		console.log(`${lbl ?? ""}${lbl ? " ~ " : ""}vec(${v.length}) ${JSON.stringify(v)}`);
+		console.log(
+			`${lbl ?? ""}${lbl ? " ~ " : ""}vec(${v.length}) ${JSON.stringify(v)}`,
+		);
 	}
 
 	export function vAdd<vecD extends vec>(u: vecD, v: vecD): vecD {
