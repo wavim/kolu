@@ -10,7 +10,7 @@ the CPU.
 A demo is available at the [GitHub Page](https://carbonicsoda.github.io/kolu/):
 
 - Move along the x-/y-axis with WASD
-- Increase or decrease FOV with I(n)/O(ut)
+- Change FOV with I(n)/O(ut)
 
 To play with the demo's options clone the repository, edit src/index.ts and run
 `npx vite watch`.
