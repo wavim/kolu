@@ -78,8 +78,9 @@ export class Scene {
 		const yMid = Math.round(0.5 * height);
 		for (const trig of perspTrigs.sort(({ z: z1 }, { z: z2 }) => z1 - z2)) {
 			let [[x1, y1], [x2, y2], [x3, y3]] = trig.projected;
-			if (options?.round)
+			if (options?.round) {
 				[x1, x2, x3, y1, y2, y3] = [x1, x2, x3, y1, y2, y3].map(Math.round);
+			}
 
 			context.beginPath();
 			context.moveTo(xMid + x1, yMid - y1);
