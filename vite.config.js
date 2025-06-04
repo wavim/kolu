@@ -1,5 +1,7 @@
 import { defineConfig } from "vite";
 
+import { ViteMinifyPlugin } from "vite-plugin-minify";
+
 export default defineConfig({
 	server: {
 		port: 5200,
@@ -9,4 +11,5 @@ export default defineConfig({
 		outDir: "docs",
 	},
 	base: "",
+	plugins: [ViteMinifyPlugin()],
 });
