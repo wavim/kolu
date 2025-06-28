@@ -24,27 +24,28 @@ export class Mat<N extends number> {
 		return new Mat(data);
 	}
 
+	// MO TODO drop, move to quaternions
 	static rot(rot: Vec<3>, deg = false): Mat<3> {
 		const [sY, sP, sR] = rot.map((c) => Math.sin(deg ? (c * Math.PI) / 180 : c)).vec;
 		const [cY, cP, cR] = rot.map((c) => Math.cos(deg ? (c * Math.PI) / 180 : c)).vec;
 
-		const yaw = new Mat<3>([
-			new Vec([cY, 0, sY]),
-			new Vec([0, 1, 0]),
-			new Vec([-sY, 0, cY]),
-		]);
-		const pitch = new Mat<3>([
+		const rX = new Mat<3>([
 			new Vec([1, 0, 0]),
 			new Vec([0, cP, -sP]),
 			new Vec([0, sP, cP]),
 		]);
-		const roll = new Mat<3>([
+		const rY = new Mat<3>([
+			new Vec([cY, 0, sY]),
+			new Vec([0, 1, 0]),
+			new Vec([-sY, 0, cY]),
+		]);
+		const rZ = new Mat<3>([
 			new Vec([cR, -sR, 0]),
-			new Vec([sR, cR, -sR]),
+			new Vec([sR, cR, 0]),
 			new Vec([0, 0, 1]),
 		]);
 
-		return roll.mMul(pitch).mMul(yaw);
+		return rZ.mMul(rY).mMul(rX);
 	}
 
 	toString(): string {
