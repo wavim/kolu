@@ -7,14 +7,22 @@ export class Mesh {
 		readonly color = "black",
 	) {}
 
-	transform(origin: Vec, offset: Vec, matrix: Mat): Mesh {
-		const vertices = this.vertices.map((v) => {
+	worldspace(origin: Vec, offset: Vec, matrix: Mat): Mesh {
+		const transformed = this.vertices.map((v) => {
 			const local = v.vSub(origin);
 			const trans = matrix.homopply(local);
 
-			return trans.vAdd(origin).vAdd(offset);
+			return trans.vAdd(offset);
 		});
 
-		return new Mesh(vertices, this.color);
+		return new Mesh(transformed, this.color);
+	}
+
+	eyespace(position: Vec, rotation: Vec): Mesh {
+		const transformed = this.vertices.map((v) => {
+			return Mat.rot(rotation.neg(), true).apply(v.vSub(position));
+		});
+
+		return new Mesh(transformed, this.color);
 	}
 }

@@ -27,47 +27,54 @@ export class Canvas {
 
 		const { width, height } = this.canvas;
 
-		const rotate = Mat.rot(camera.rot);
-		const align = rotate.homo(camera.pos.mul(-1));
+		const r = 0.5 * width;
+		const t = 0.5 * height;
+		const n = (0.5 * width) / Math.tan((camera.fov * Math.PI) / 360);
 
-		const invDist = (2 * Math.tan(camera.fov / 2)) / height;
 		const project = new Mat([
-			[1, 0, 0],
-			[0, 1, 0],
-			[0, 0, 0],
-		]).homo(new Vec([0, 0, -1]), new Vec([0, 0, invDist, 0]));
+			[n / r, 0, 0],
+			[0, n / t, 0],
+			[0, 0, -1],
+		]).homo(new Vec([0, 0, -2 * n]), new Vec([0, 0, -1, 0]));
 
-		const transform = project.mMul(align);
+		const meshes = world.models.flatMap((m) => {
+			return m.worldspace.map((w) => {
+				return w.eyespace(camera.position, camera.rotation);
+			});
+		});
 
-		const results: { z: number; projected: Vec[]; color: string }[] = [];
+		const mapped: { maxz: number; ndcs: Vec[]; color: string }[] = [];
 
-		for (const mesh of world.models.flatMap((m) => m.transformed)) {
-			const projected = mesh.vertices.map((v) => transform.homopply(v));
+		for (const { vertices, color } of meshes) {
+			const ndcs = vertices.map((v) => project.homopply(v));
+			console.log("🚀 ~ Canvas ~ ndcs:", ndcs)
 
-			const minZ = Math.min(...projected.map((v) => v.z));
+			const maxz = Math.max(...ndcs.map((n) => n.z));
 
-			if (minZ > 0) {
-				results.push({ z: minZ, projected, color: mesh.color });
+			if (maxz > 0) {
+				continue;
 			}
+
+			mapped.push({ maxz, ndcs, color });
 		}
 
-		results.sort((r1, r2) => r1.z - r2.z);
+		mapped.sort((r1, r2) => r1.maxz - r2.maxz);
 
 		this.context.clearRect(0, 0, width, height);
 
-		const mx = Math.round(width / 2);
-		const my = Math.round(height / 2);
+		const mx = Math.round(0.5 * width);
+		const my = Math.round(0.5 * height);
 
-		for (const { projected, color } of results) {
+		for (const { ndcs, color } of mapped) {
 			this.context.beginPath();
 
-			const ox = mx + projected[0].x;
-			const oy = my - projected[0].y;
+			const ox = (ndcs[0].x + 1) * mx;
+			const oy = (1 - ndcs[0].y) * my;
 
 			this.context.moveTo(ox, oy);
 
-			for (const vertex of projected.slice(1)) {
-				this.context.lineTo(mx + vertex.x, my - vertex.y);
+			for (const ndc of ndcs.slice(1)) {
+				this.context.lineTo((ndc.x + 1) * mx, (1 - ndc.y) * my);
 			}
 
 			if (options?.wireframe) {

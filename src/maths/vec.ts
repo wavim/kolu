@@ -26,8 +26,12 @@ export class Vec {
 		return this.vec[2];
 	}
 
+	static fill(dim: number, x: number): Vec {
+		return new Vec(Array<number>(dim).fill(x));
+	}
+
 	static zero(dim: number): Vec {
-		return new Vec(Array<number>(dim).fill(0));
+		return this.fill(dim, 0);
 	}
 
 	static id(dim: number, i: number): Vec {
@@ -43,6 +47,10 @@ export class Vec {
 
 	vSub(v: Vec): Vec {
 		return this.map((e, i) => e - v.vec[i]);
+	}
+
+	neg(): Vec {
+		return this.map((e) => -e);
 	}
 
 	add(x: number): Vec {
