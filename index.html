@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -12,21 +12,23 @@
 			href="https://avatars.githubusercontent.com/u/156987370"
 		/>
 		<style>
-			canvas {
+			#canvas {
 				position: fixed;
 				left: 0;
 				top: 0;
+				width: 100dvw;
+				height: 100dvh;
 
 				background-color: whitesmoke;
 				outline: none;
-				cursor: none;
+				cursor: move;
 			}
 		</style>
 	</head>
 
 	<body>
 		<canvas
-			id="canvas3d"
+			id="canvas"
 			tabindex="1"
 		></canvas>
 		<script
