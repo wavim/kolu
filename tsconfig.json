@@ -1,18 +1,17 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "esnext",
-		"outDir": "out",
-		"lib": ["esnext", "DOM"],
-		"rootDir": "src",
-		"sourceMap": true,
+	"include": ["src/**/*"],
 
+	"compilerOptions": {
 		"strict": true,
-		"strictNullChecks": false,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"removeComments": true,
-		"noFallthroughCasesInSwitch": true,
-		"forceConsistentCasingInFileNames": true
+
+		"target": "ESNext",
+		"module": "ESNext",
+
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+
+		"noEmit": true,
+		"sourceMap": true
 	}
 }
