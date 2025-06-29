@@ -14,12 +14,24 @@ export class Vec {
 		return new Vec(this.vec.map(fn));
 	}
 
+	get x(): number {
+		return this.vec[0];
+	}
+
+	get y(): number {
+		return this.vec[1];
+	}
+
+	get z(): number {
+		return this.vec[2];
+	}
+
 	static zero(dim: number): Vec {
-		return new Vec(Array(dim).fill(0));
+		return new Vec(Array<number>(dim).fill(0));
 	}
 
 	static id(dim: number, i: number): Vec {
-		const vec = Array(dim).fill(0);
+		const vec = Array<number>(dim).fill(0);
 		vec[i] = 1;
 
 		return new Vec(vec);

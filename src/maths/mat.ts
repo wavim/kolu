@@ -35,7 +35,7 @@ export class Mat {
 	}
 
 	static zero(dim: number): Mat {
-		return new Mat(Array(dim).fill(Vec.zero(dim).vec));
+		return new Mat(Array<number[]>(dim).fill(Vec.zero(dim).vec));
 	}
 
 	static id(dim: number): Mat {

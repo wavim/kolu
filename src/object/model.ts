@@ -15,7 +15,7 @@ export class Model {
 		this.matrix = mat.dim === 3 ? mat.homo() : mat;
 	}
 
-	get result(): Mesh[] {
+	get transformed(): Mesh[] {
 		return this.meshes.map((m) => m.transform(this.origin, this.offset, this.matrix));
 	}
 }
