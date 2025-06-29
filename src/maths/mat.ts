@@ -115,4 +115,8 @@ export class Mat {
 	homo(d: Vec = Vec.zero(3), s: Vec = Vec.id(4, 3)): Mat {
 		return new Mat(this.mat.map((r, i) => r.concat(d.vec[i])).concat([s.vec]));
 	}
+
+	homopply(v: Vec): Vec {
+		return this.apply(v.homo()).unhomo();
+	}
 }
