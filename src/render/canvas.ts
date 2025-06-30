@@ -43,22 +43,21 @@ export class Canvas {
 			});
 		});
 
-		const mapped: { maxz: number; ndcs: Vec[]; color: string }[] = [];
+		const mapped: { ndcs: Vec[]; maxz: number; color: string }[] = [];
 
 		for (const { vertices, color } of meshes) {
 			const ndcs = vertices.map((v) => project.homopply(v));
-			console.log("🚀 ~ Canvas ~ ndcs:", ndcs)
 
 			const maxz = Math.max(...ndcs.map((n) => n.z));
 
-			if (maxz > 0) {
+			if (Math.abs(maxz) > 1) {
 				continue;
 			}
 
-			mapped.push({ maxz, ndcs, color });
+			mapped.push({ ndcs, color, maxz });
 		}
 
-		mapped.sort((r1, r2) => r1.maxz - r2.maxz);
+		mapped.sort((m1, m2) => m2.maxz - m1.maxz);
 
 		this.context.clearRect(0, 0, width, height);
 
