@@ -84,16 +84,13 @@ for (let i = 0; i < options.modelCount; i++) {
 	rYv.push(Math.random());
 }
 
-function rotateModels(time: DOMHighResTimeStamp = 0): void {
+function rotate(time: DOMHighResTimeStamp = 0): void {
 	for (let i = 0; i < options.modelCount; i++) {
 		const tick = time / 1000;
 
 		models[i].transform = Mat.rot(new Vec([tick * rXv[i], tick * rYv[i], 0]));
 	}
-
-	requestAnimationFrame(rotateModels);
 }
-rotateModels();
 
 canvas.canvas.onmousemove = (ev) => {
 	camera.rotation = new Vec([
@@ -111,7 +108,7 @@ canvas.canvas.onkeydown = (ev) => {
 			u,
 			0.95,
 			(v) => {
-				camera.position = camera.position.vSub(
+				camera.position = camera.position.vAdd(
 					Mat.rot(camera.rotation, true).apply(v),
 				);
 			},
@@ -143,34 +140,35 @@ canvas.canvas.onkeydown = (ev) => {
 			return;
 		}
 		case "w": {
-			mv(new Vec([0, 0, w * 0.1]));
-			return;
-		}
-		case "s": {
 			mv(new Vec([0, 0, -w * 0.1]));
 			return;
 		}
-		case "a": {
-			mv(new Vec([w * 0.1, 0, 0]));
+		case "s": {
+			mv(new Vec([0, 0, w * 0.1]));
 			return;
 		}
-		case "d": {
+		case "a": {
 			mv(new Vec([-w * 0.1, 0, 0]));
 			return;
 		}
+		case "d": {
+			mv(new Vec([w * 0.1, 0, 0]));
+			return;
+		}
 		case "q": {
-			mv(new Vec([0, w * 0.1, 0]));
+			mv(new Vec([0, -w * 0.1, 0]));
 			return;
 		}
 		case "e": {
-			mv(new Vec([0, -w * 0.1, 0]));
+			mv(new Vec([0, w * 0.1, 0]));
 			return;
 		}
 	}
 };
 
-function main(): void {
+function main(time: DOMHighResTimeStamp): void {
+	rotate(time);
 	render();
 	requestAnimationFrame(main);
 }
-main();
+main(0);
