@@ -123,7 +123,7 @@ canvas.canvas.onkeydown = (ev) => {
 		}
 		case "i": {
 			lerp(
-				1,
+				0.5,
 				0.95,
 				(v) => (camera.fov -= v),
 				(u, a) => (u < 0.1 ? undefined : u * a),
@@ -132,7 +132,7 @@ canvas.canvas.onkeydown = (ev) => {
 		}
 		case "o": {
 			lerp(
-				1,
+				0.5,
 				0.95,
 				(v) => (camera.fov += v),
 				(u, a) => (u < 0.1 ? undefined : u * a),
@@ -140,27 +140,27 @@ canvas.canvas.onkeydown = (ev) => {
 			return;
 		}
 		case "w": {
-			mv(new Vec([0, 0, -w * 0.1]));
+			mv(new Vec([0, 0, -w * 0.05]));
 			return;
 		}
 		case "s": {
-			mv(new Vec([0, 0, w * 0.1]));
+			mv(new Vec([0, 0, w * 0.05]));
 			return;
 		}
 		case "a": {
-			mv(new Vec([-w * 0.1, 0, 0]));
+			mv(new Vec([-w * 0.05, 0, 0]));
 			return;
 		}
 		case "d": {
-			mv(new Vec([w * 0.1, 0, 0]));
+			mv(new Vec([w * 0.05, 0, 0]));
 			return;
 		}
 		case "q": {
-			mv(new Vec([0, -w * 0.1, 0]));
+			mv(new Vec([0, -w * 0.05, 0]));
 			return;
 		}
 		case "e": {
-			mv(new Vec([0, w * 0.1, 0]));
+			mv(new Vec([0, w * 0.05, 0]));
 			return;
 		}
 	}
